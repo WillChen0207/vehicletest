@@ -1,0 +1,291 @@
+{
+  "accessors": [
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 312,
+      "max": [
+        2.9750001430511475,
+        12.656250953674316,
+        1.336063027381897
+      ],
+      "min": [
+        -2.9750001430511475,
+        7.4437508583068848,
+        -1.3360626697540283
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 3744,
+      "componentType": 5126,
+      "count": 312,
+      "max": [
+        0.94928634166717529,
+        0.96041685342788696,
+        0.99977892637252808
+      ],
+      "min": [
+        -0.94928634166717529,
+        -0.89121007919311523,
+        -0.99977892637252808
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 312,
+      "max": [
+        0.47395935654640198,
+        1,
+        0.99258768558502197,
+        1
+      ],
+      "min": [
+        -0.47395932674407959,
+        -1,
+        -0.96372967958450317,
+        1
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 432,
+      "max": [
+        311
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 291,
+      "max": [
+        5
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 291,
+      "max": [
+        8.3644933675280686e-17,
+        1,
+        8.3644933675280686e-17,
+        1
+      ],
+      "min": [
+        -8.6590854708827039e-17,
+        -0.86602538824081421,
+        -8.6590854708827039e-17,
+        -0.49999994039535522
+      ],
+      "type": "VEC4"
+    }
+  ],
+  "animations": [
+    {
+      "channels": [
+        {
+          "sampler": 0,
+          "target": {
+            "node": 5,
+            "path": "rotation"
+          }
+        }
+      ],
+      "name": "Take 001",
+      "samplers": [
+        {
+          "input": 4,
+          "interpolation": "LINEAR",
+          "output": 5
+        }
+      ]
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "mano1creative (https://sketchfab.com/mano1creative)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/models/17cf0dbe4435434eb6e04394fd5bf7ae",
+      "title": "Low Poly Spinning Heart!"
+    },
+    "generator": "Sketchfab-3.17.1",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 1728,
+      "byteOffset": 0,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 7488,
+      "byteOffset": 1728,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4992,
+      "byteOffset": 9216,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1164,
+      "byteOffset": 14208,
+      "name": "floatBufferViews"
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4656,
+      "byteOffset": 15372,
+      "byteStride": 16,
+      "name": "floatBufferViews"
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 20028,
+      "uri": "scene.bin"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "name": "Default",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1,
+          0,
+          0.0017511285,
+          1
+        ],
+        "metallicFactor": 0.97122713409999994,
+        "roughnessFactor": 0.093178353699999994
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Mesh_Default_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "name": "RootNode (gltf orientation matrix)",
+      "rotation": [
+        -0.70710678118654746,
+        -0,
+        -0,
+        0.70710678118654757
+      ]
+    },
+    {
+      "children": [
+        2
+      ],
+      "name": "RootNode (model correction matrix)"
+    },
+    {
+      "children": [
+        3
+      ],
+      "matrix": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "name": "cdb724fa2c21488f8e207069b53e046d.fbx"
+    },
+    {
+      "children": [
+        4
+      ],
+      "name": ""
+    },
+    {
+      "children": [
+        5
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        6
+      ],
+      "name": "Mesh",
+      "translation": [
+        0,
+        0.05000000074505806,
+        -0.10000000149011612
+      ]
+    },
+    {
+      "mesh": 0,
+      "name": "Mesh_Default_0"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "OSG_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}
+
