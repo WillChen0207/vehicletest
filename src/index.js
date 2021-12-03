@@ -32,22 +32,28 @@ const scene = new THREE.Scene()
 
 // 导入gltf的模型文件
 var loader = new GLTFLoader();
-
+var group = new THREE.Group();
+var ForwardSpeed = 0, RightSpeed = 0, Rotation = 0, PreRotation = 0,Speed = 0;
 loader.load('././static/scene.gltf',(obj) =>{
-  obj.scene.position.set(0,60,250);
+  obj.scene.position.set(0,60,-250);
   // obj.scene.position.set(0,0,0);
-  obj.scene.rotation.set(0,0,0);
+  obj.scene.rotation.set(0,3.14,0);
   obj.scene.scale.set(1,1,1);
-  var mesh = obj.scene;
-  scene.add(obj.scene);
+  //var mesh = obj.scene;
+  group.add(obj.scene);
+  scene.add(group);
+
     function onKeyDown(event)
   {
     switch(event.keyCode)
     {
-      case 38: /*up*/	mesh.position.z += 10; break;
-      case 40: /*down*/mesh.position.z -= 10; break;
-      case 37: /*left*/mesh.rotation.y += 0.04; break;
-      case 39: /*right*/mesh.rotation.y -= 0.04; break;
+      case 38: /*up*/	 Speed += 0.5; break;
+      case 40: /*down*/Speed -= 0.5; break;
+      case 37: /*left*/if (Speed >= 0) Rotation = -0.02;if (Speed < 0) Rotation = 0.02; break;
+      case 39: /*right*/if (Speed >= 0) Rotation = 0.02;if (Speed < 0) Rotation = -0.02; break;
+      case 32:/*space*/if (Speed >= 1) Speed -= 1; if (Speed <= -1) Speed += 1; if (Speed > -1 && Speed < 1) Speed = 0; break;
+      case 82:/*R*/ Speed = 0; PreRotation = 0; Rotation = 0; group.position.set(0,0,0);group.rotation.set(0,0,0); camera.position.set(1200,1000,0); break;
+      case 77:/*M*/ flag = !flag;
     }
   };
 
@@ -55,12 +61,15 @@ loader.load('././static/scene.gltf',(obj) =>{
   {
     switch(event.keyCode)
     {
-      case 38: /*up*/	mesh.position.z += 0; break;
-      case 40: /*down*/mesh.position.z -= 0; break;
-      case 37: /*left*/mesh.rotation.y += 0; break;
-      case 39: /*right*/mesh.rotation.y -= 0; break;
+      case 38: /*up*/	 Speed += 0; break;
+      case 40: /*down*/Speed -= 0; break;
+      case 37: /*left*/Rotation = 0; break;
+      case 39: /*right*/Rotation = 0; break;
+      case 32:/*space*/if (Speed >= 1) Speed -= 1; if (Speed <= -1) Speed += 1; if (Speed > -1 && Speed < 1) Speed = 0; break;
+      case 82:/*R*/Speed = 0; PreRotation = 0; Rotation = 0; group.position.set(0,0,0);group.rotation.set(0,0,0); camera.position.set(1200,1000,0); break;
     }
   };
+
   document.addEventListener('keydown', onKeyDown, false);
   document.addEventListener('keyup', onKeyUp, false);
 });
@@ -68,19 +77,29 @@ loader.load('././static/scene.gltf',(obj) =>{
 
 
 //旋转双面白色平面
-const planeGeometry = new THREE.PlaneGeometry(1000, 1000);
-let plane = new THREE.Mesh(planeGeometry);
-plane.material = new THREE.MeshBasicMaterial({
-    side: THREE.DoubleSide,//双面显示
-    color: '#eeeeee'//材质颜色
-});
-plane.rotation.x += 1.57;//旋转平面
-plane.position.y -= 2;//移动位置
-scene.add(plane);
+// const planeGeometry = new THREE.PlaneGeometry(10000, 10000);
+// let plane = new THREE.Mesh(planeGeometry);
+// plane.material = new THREE.MeshBasicMaterial({
+//     side: THREE.DoubleSide,//双面显示
+//     color: '#eeeeee'//材质颜色
+// });
+// plane.rotation.x += 1.57;//旋转平面
+// plane.position.y -= 2;//移动位置
+// scene.add(plane);
 
-//辅助坐标
+//盒子模型
+let urls = [
+  '././static/textures/posx.jpg','././static/textures/negx.jpg',
+  '././static/textures/posy.jpg','././static/textures/negy.jpg',
+  '././static/textures/posz.jpg','././static/textures/negz.jpg'
+];
+let boxloader = new THREE.CubeTextureLoader();
+scene.background = boxloader.load(urls);
+
+// 辅助坐标
 var axesHelper = new THREE.AxesHelper( 150 );
 scene.add( axesHelper );
+
 
 
 /**
@@ -108,7 +127,7 @@ window.addEventListener('resize', () => {
 var ambient = new THREE.AmbientLight(0x444444);//创建一个环境光
 scene.add(ambient);
 var spotLight = new THREE.SpotLight(0xffffff);//创建一个白色点光源
-spotLight.position.set(500,1000,500);
+spotLight.position.set(0,5000,0);
 spotLight.castShadow = true;//开启点光源生成动态投影
 spotLight.lookAt(scene);
 scene.add(spotLight);
@@ -121,11 +140,12 @@ const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
   0.001,
-  5000
+  10000
 )
-camera.position.x = 500
-camera.position.y = 400
-camera.position.z = 50
+camera.position.x = 1200
+camera.position.y = 1000
+camera.position.z = 0
+// camera.lookAt(group)
 scene.add(camera)
 
 // Controls
@@ -150,6 +170,7 @@ controls.touches = {
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   antialias: true,
+  logarithmicDepthBuffer : true
 })
 renderer.setClearColor(0x444444,1);//设置渲染器renderer的背景色
 renderer.setSize(sizes.width, sizes.height)
@@ -167,7 +188,26 @@ const tick = () => {
 
   // Update controls
   controls.update()
+  
+  //Move the vehicle
+  if (Rotation != 0){
+    PreRotation += Rotation;
+    group.rotation.y -= Rotation;
+    
+    if (PreRotation > 2 * Math.PI || PreRotation < 2 * (-Math.PI)){
+      PreRotation -= 2 * Math.PI;
+    }
+  }
+  Rotation = 0;
+  ForwardSpeed = Speed * Math.cos(PreRotation);
+  RightSpeed = Speed * Math.sin(PreRotation);
+  group.position.z -= ForwardSpeed;
+  group.position.x += RightSpeed;
+  // camera.position.x += RightSpeed;
+  
+
   // Render
+  //camera.lookAt(group);
   renderer.render(scene, camera)
   
 
