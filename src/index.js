@@ -98,24 +98,24 @@ loader.load('././static/scene.gltf',(obj) =>{
 
 
 //旋转双面白色平面
-const planeGeometry = new THREE.PlaneGeometry(10000, 10000);
-let plane = new THREE.Mesh(planeGeometry);
-plane.material = new THREE.MeshBasicMaterial({
-    side: THREE.DoubleSide,//双面显示
-    color: '#eeeeee'//材质颜色
-});
-plane.rotation.x += 1.57;//旋转平面
-plane.position.y -= 2;//移动位置
-scene.add(plane);
+// const planeGeometry = new THREE.PlaneGeometry(10000, 10000);
+// let plane = new THREE.Mesh(planeGeometry);
+// plane.material = new THREE.MeshBasicMaterial({
+//     side: THREE.DoubleSide,//双面显示
+//     color: '#eeeeee'//材质颜色
+// });
+// plane.rotation.x += 1.57;//旋转平面
+// plane.position.y -= 2;//移动位置
+// scene.add(plane);
 
 //盒子模型
-// let urls = [
-//   '././static/textures/posx.jpg','././static/textures/negx.jpg',
-//   '././static/textures/posy.jpg','././static/textures/negy.jpg',
-//   '././static/textures/posz.jpg','././static/textures/negz.jpg'
-// ];
-// let boxloader = new THREE.CubeTextureLoader();
-// scene.background = boxloader.load(urls);
+let urls = [
+  '././static/textures/posx.jpg','././static/textures/negx.jpg',
+  '././static/textures/posy.jpg','././static/textures/negy.jpg',
+  '././static/textures/posz.jpg','././static/textures/negz.jpg'
+];
+let boxloader = new THREE.CubeTextureLoader();
+scene.background = boxloader.load(urls);
 
 // 辅助坐标
 // var axesHelper = new THREE.AxesHelper( 150 );
@@ -164,8 +164,8 @@ const camera = new THREE.PerspectiveCamera(
   10000
 )
 camera.position.set(0, 220, -50)
-// camera.lookAt(group)
 scene.add(camera)
+group.add(camera)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
@@ -209,7 +209,7 @@ const tick = () => {
   controls.update()
   
   //Move the vehicle
-  camera.lookAt(0, 220, -10000)
+  // camera.lookAt(0, 220, -10000)
   // Speed = vehicleAttribute.speed;
   // Rotation = vehicleAttribute.rotation;
   // camera.position.x = vehicleAttribute.cameraPositionX;
@@ -218,10 +218,10 @@ const tick = () => {
   // camera.rotation.x = vehicleAttribute.cameraRotationX;
   // camera.rotation.y = vehicleAttribute.cameraRotationY;
   // camera.rotation.z = vehicleAttribute.cameraRotationZ;
+  camera.lookAt(100000 * Math.sin(PreRotation), 220, -100000 * Math.cos(PreRotation))
   if (Rotation != 0){
     PreRotation += Rotation;
     group.rotation.y -= Rotation;
-    
     if (PreRotation > 2 * Math.PI || PreRotation < 2 * (-Math.PI)){
       PreRotation -= 2 * Math.PI;
     }
@@ -229,7 +229,6 @@ const tick = () => {
   Rotation = 0;
   ForwardSpeed = Speed * Math.cos(PreRotation);
   RightSpeed = Speed * Math.sin(PreRotation);
-  camera.position.z -= ForwardSpeed;
   group.position.z -= ForwardSpeed;
   group.position.x += RightSpeed;
   // camera.position.x -= RightSpeed;
