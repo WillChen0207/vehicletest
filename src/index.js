@@ -9,6 +9,27 @@ import { GLTFLoader }  from 'three/examples/jsm/loaders/GLTFLoader.js'
  */
 import * as dat from 'dat.gui'
 const gui = new dat.GUI()
+// var vehicleAttribute = new function(){
+//   this.speed = 0;
+//   this.rotation = 0;
+//   this.cameraPositionX = 0;
+//   this.cameraPositionY = 300;
+//   this.cameraPositionZ = 1000;
+//   this.cameraRotationX = 0;
+//   this.cameraRotationY = 0;
+//   this.cameraRotationZ = 0;
+// };
+// gui.add(vehicleAttribute,"speed", 0, 10);
+// gui.add(vehicleAttribute,"rotation", -0.1, 0.1);
+// gui.add(vehicleAttribute,"cameraPositionX", -2000, 2000);
+// gui.add(vehicleAttribute,"cameraPositionY", -2000, 2000);
+// gui.add(vehicleAttribute,"cameraPositionZ", -2000, 2000);
+// gui.add(vehicleAttribute,"cameraRotationX", -3.14, 3.14);
+// gui.add(vehicleAttribute,"cameraRotationY", -3.14, 3.14);
+// gui.add(vehicleAttribute,"cameraRotationZ", -3.14, 3.14);
+
+
+
 
 /**
  * Base
@@ -37,7 +58,7 @@ var ForwardSpeed = 0, RightSpeed = 0, Rotation = 0, PreRotation = 0,Speed = 0;
 loader.load('././static/scene.gltf',(obj) =>{
   obj.scene.position.set(0,60,-250);
   // obj.scene.position.set(0,0,0);
-  obj.scene.rotation.set(0,3.14,0);
+  obj.scene.rotation.set(0,Math.PI,0);
   obj.scene.scale.set(1,1,1);
   //var mesh = obj.scene;
   group.add(obj.scene);
@@ -52,8 +73,8 @@ loader.load('././static/scene.gltf',(obj) =>{
       case 37: /*left*/if (Speed >= 0) Rotation = -0.02;if (Speed < 0) Rotation = 0.02; break;
       case 39: /*right*/if (Speed >= 0) Rotation = 0.02;if (Speed < 0) Rotation = -0.02; break;
       case 32:/*space*/if (Speed >= 1) Speed -= 1; if (Speed <= -1) Speed += 1; if (Speed > -1 && Speed < 1) Speed = 0; break;
-      case 82:/*R*/ Speed = 0; PreRotation = 0; Rotation = 0; group.position.set(0,0,0);group.rotation.set(0,0,0); camera.position.set(1200,1000,0); break;
-      case 77:/*M*/ flag = !flag;
+      case 82:/*R*/ Speed = 0; PreRotation = 0; Rotation = 0; group.position.set(0,0,0);group.rotation.set(0,0,0); camera.position.set(0,220,-50); break;
+
     }
   };
 
@@ -66,7 +87,7 @@ loader.load('././static/scene.gltf',(obj) =>{
       case 37: /*left*/Rotation = 0; break;
       case 39: /*right*/Rotation = 0; break;
       case 32:/*space*/if (Speed >= 1) Speed -= 1; if (Speed <= -1) Speed += 1; if (Speed > -1 && Speed < 1) Speed = 0; break;
-      case 82:/*R*/Speed = 0; PreRotation = 0; Rotation = 0; group.position.set(0,0,0);group.rotation.set(0,0,0); camera.position.set(1200,1000,0); break;
+      case 82:/*R*/Speed = 0; PreRotation = 0; Rotation = 0; group.position.set(0,0,0);group.rotation.set(0,0,0); camera.position.set(0,220,-50); break;
     }
   };
 
@@ -77,28 +98,28 @@ loader.load('././static/scene.gltf',(obj) =>{
 
 
 //旋转双面白色平面
-// const planeGeometry = new THREE.PlaneGeometry(10000, 10000);
-// let plane = new THREE.Mesh(planeGeometry);
-// plane.material = new THREE.MeshBasicMaterial({
-//     side: THREE.DoubleSide,//双面显示
-//     color: '#eeeeee'//材质颜色
-// });
-// plane.rotation.x += 1.57;//旋转平面
-// plane.position.y -= 2;//移动位置
-// scene.add(plane);
+const planeGeometry = new THREE.PlaneGeometry(10000, 10000);
+let plane = new THREE.Mesh(planeGeometry);
+plane.material = new THREE.MeshBasicMaterial({
+    side: THREE.DoubleSide,//双面显示
+    color: '#eeeeee'//材质颜色
+});
+plane.rotation.x += 1.57;//旋转平面
+plane.position.y -= 2;//移动位置
+scene.add(plane);
 
 //盒子模型
-let urls = [
-  '././static/textures/posx.jpg','././static/textures/negx.jpg',
-  '././static/textures/posy.jpg','././static/textures/negy.jpg',
-  '././static/textures/posz.jpg','././static/textures/negz.jpg'
-];
-let boxloader = new THREE.CubeTextureLoader();
-scene.background = boxloader.load(urls);
+// let urls = [
+//   '././static/textures/posx.jpg','././static/textures/negx.jpg',
+//   '././static/textures/posy.jpg','././static/textures/negy.jpg',
+//   '././static/textures/posz.jpg','././static/textures/negz.jpg'
+// ];
+// let boxloader = new THREE.CubeTextureLoader();
+// scene.background = boxloader.load(urls);
 
 // 辅助坐标
-var axesHelper = new THREE.AxesHelper( 150 );
-scene.add( axesHelper );
+// var axesHelper = new THREE.AxesHelper( 150 );
+// scene.add( axesHelper );
 
 
 
@@ -142,9 +163,7 @@ const camera = new THREE.PerspectiveCamera(
   0.001,
   10000
 )
-camera.position.x = 1200
-camera.position.y = 1000
-camera.position.z = 0
+camera.position.set(0, 220, -50)
 // camera.lookAt(group)
 scene.add(camera)
 
@@ -190,6 +209,15 @@ const tick = () => {
   controls.update()
   
   //Move the vehicle
+  camera.lookAt(0, 220, -10000)
+  // Speed = vehicleAttribute.speed;
+  // Rotation = vehicleAttribute.rotation;
+  // camera.position.x = vehicleAttribute.cameraPositionX;
+  // camera.position.y = vehicleAttribute.cameraPositionY;
+  // camera.position.z = vehicleAttribute.cameraPositionZ;
+  // camera.rotation.x = vehicleAttribute.cameraRotationX;
+  // camera.rotation.y = vehicleAttribute.cameraRotationY;
+  // camera.rotation.z = vehicleAttribute.cameraRotationZ;
   if (Rotation != 0){
     PreRotation += Rotation;
     group.rotation.y -= Rotation;
@@ -201,8 +229,10 @@ const tick = () => {
   Rotation = 0;
   ForwardSpeed = Speed * Math.cos(PreRotation);
   RightSpeed = Speed * Math.sin(PreRotation);
+  camera.position.z -= ForwardSpeed;
   group.position.z -= ForwardSpeed;
   group.position.x += RightSpeed;
+  // camera.position.x -= RightSpeed;
   // camera.position.x += RightSpeed;
   
 
