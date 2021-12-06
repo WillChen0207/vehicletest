@@ -2,12 +2,15 @@ import './style/main.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader }  from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { BasisTextureLoader }  from 'three/examples/jsm/loaders/BasisTextureLoader'
+
 // import { RoughnessMipmapper }  from 'three/examples/jsm/utils/RoughnessMipmapper.js'
 
 /**
  * GUI Controls
  */
 import * as dat from 'dat.gui'
+import { DoubleSide } from 'three'
 const gui = new dat.GUI()
 // var vehicleAttribute = new function(){
 //   this.speed = 0;
@@ -39,6 +42,8 @@ const canvas = document.querySelector('#webgl')
 
 // Scene
 const scene = new THREE.Scene()
+scene.fog = new THREE.Fog( 0xf2f7ff, 1, 100000 );
+
 
 /**
  * Object
@@ -98,15 +103,30 @@ loader.load('././static/scene.gltf',(obj) =>{
 
 
 //旋转双面白色平面
-// const planeGeometry = new THREE.PlaneGeometry(10000, 10000);
+const planeGeometry = new THREE.PlaneGeometry(10000, 10000);
 // let plane = new THREE.Mesh(planeGeometry);
+const textureloader = new THREE.CubeTextureLoader();
+var planematerial;
+textureloader.load("././static/textures/plane.jpg", function(planetexture){
+    planematerial = new THREE.MeshLambertMaterial({
+    color : 0xffffff,
+    map : planetexture,
+    side : DoubleSide
+  });
+});
+
+var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+meshPlane.rotation.x += 1.57;//旋转平面
+meshPlane.position.y -= 2;//移动位置
+scene.add(meshPlane);
+// renderer.render(scene, camera);
+  
 // plane.material = new THREE.MeshBasicMaterial({
 //     side: THREE.DoubleSide,//双面显示
 //     color: '#eeeeee'//材质颜色
 // });
-// plane.rotation.x += 1.57;//旋转平面
-// plane.position.y -= 2;//移动位置
-// scene.add(plane);
+
+
 
 //盒子模型
 let urls = [
@@ -218,7 +238,7 @@ const tick = () => {
   // camera.rotation.x = vehicleAttribute.cameraRotationX;
   // camera.rotation.y = vehicleAttribute.cameraRotationY;
   // camera.rotation.z = vehicleAttribute.cameraRotationZ;
-  camera.lookAt(100000 * Math.sin(PreRotation), 220, -100000 * Math.cos(PreRotation))
+  camera.lookAt(1000000 * Math.sin(PreRotation), 220, -1000000 * Math.cos(PreRotation))
   if (Rotation != 0){
     PreRotation += Rotation;
     group.rotation.y -= Rotation;
