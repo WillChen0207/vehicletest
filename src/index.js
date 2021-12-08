@@ -10,26 +10,26 @@ import { BasisTextureLoader }  from 'three/examples/jsm/loaders/BasisTextureLoad
  * GUI Controls
  */
 import * as dat from 'dat.gui'
-import { DoubleSide } from 'three'
+import { DoubleSide, TextureLoader } from 'three'
 const gui = new dat.GUI()
-// var vehicleAttribute = new function(){
-//   this.speed = 0;
-//   this.rotation = 0;
-//   this.cameraPositionX = 0;
-//   this.cameraPositionY = 300;
-//   this.cameraPositionZ = 1000;
-//   this.cameraRotationX = 0;
-//   this.cameraRotationY = 0;
-//   this.cameraRotationZ = 0;
-// };
-// gui.add(vehicleAttribute,"speed", 0, 10);
-// gui.add(vehicleAttribute,"rotation", -0.1, 0.1);
-// gui.add(vehicleAttribute,"cameraPositionX", -2000, 2000);
-// gui.add(vehicleAttribute,"cameraPositionY", -2000, 2000);
-// gui.add(vehicleAttribute,"cameraPositionZ", -2000, 2000);
-// gui.add(vehicleAttribute,"cameraRotationX", -3.14, 3.14);
-// gui.add(vehicleAttribute,"cameraRotationY", -3.14, 3.14);
-// gui.add(vehicleAttribute,"cameraRotationZ", -3.14, 3.14);
+var vehicleAttribute = new function(){
+  this.speed = 0;
+  this.rotation = 0;
+  this.cameraPositionX = 0;
+  this.cameraPositionY = 220;
+  this.cameraPositionZ = 50;
+  this.cameraRotationX = 0;
+  this.cameraRotationY = 0;
+  this.cameraRotationZ = 0;
+};
+gui.add(vehicleAttribute,"speed", -100, 100).listen();
+gui.add(vehicleAttribute,"rotation", -0.1, 0.1).listen();
+gui.add(vehicleAttribute,"cameraPositionX", -100000, 100000).listen();
+gui.add(vehicleAttribute,"cameraPositionY", -100000, 100000).listen();
+gui.add(vehicleAttribute,"cameraPositionZ", -100000, 100000).listen();
+gui.add(vehicleAttribute,"cameraRotationX", -2 * Math.PI, 2 * Math.PI).listen();
+gui.add(vehicleAttribute,"cameraRotationY", -2 * Math.PI, 2 * Math.PI).listen();
+gui.add(vehicleAttribute,"cameraRotationZ", -2 * Math.PI, 2 * Math.PI).listen();
 
 
 
@@ -57,28 +57,99 @@ scene.fog = new THREE.Fog( 0xf2f7ff, 1, 100000 );
 // scene.add(mesh)
 
 // 导入gltf的模型文件
-var loader = new GLTFLoader();
 var group = new THREE.Group();
+var loader = new GLTFLoader();
 var ForwardSpeed = 0, RightSpeed = 0, Rotation = 0, PreRotation = 0,Speed = 0;
-loader.load('././static/scene.gltf',(obj) =>{
-  obj.scene.position.set(0,60,-250);
-  // obj.scene.position.set(0,0,0);
-  obj.scene.rotation.set(0,Math.PI,0);
-  obj.scene.scale.set(1,1,1);
-  //var mesh = obj.scene;
-  group.add(obj.scene);
+loader.load('../static/scene.gltf',(obj) =>{
+  var mesh = obj.scene;
+  // var textloader = new TextureLoader();
+  // textloader.load
+  mesh.position.set(0,60,250);
+  mesh.rotation.set(0,0,0);
+  mesh.scale.set(1,1,1);
+  group.add(mesh);
   scene.add(group);
 
+  //双面平面
+  var planeGeometry = new THREE.PlaneGeometry(10000, 10000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/plane.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.x += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.y -= 2;//移动位置
+  scene.add(meshPlane);
+  });
+  
+
+  var flag = true;
     function onKeyDown(event)
   {
     switch(event.keyCode)
     {
-      case 38: /*up*/	 Speed += 0.5; break;
-      case 40: /*down*/Speed -= 0.5; break;
-      case 37: /*left*/if (Speed >= 0) Rotation = -0.02;if (Speed < 0) Rotation = 0.02; break;
-      case 39: /*right*/if (Speed >= 0) Rotation = 0.02;if (Speed < 0) Rotation = -0.02; break;
+      case 38: /*up*/	 Speed += 0.5; vehicleAttribute.speed += 0.5;break;
+      case 40: /*down*/Speed -= 0.5; vehicleAttribute.speed -= 0.5;break;
+      case 37: /*left*/{
+        if (Speed >= 0) {
+          // Rotation = -0.02;
+          vehicleAttribute.cameraRotationY -= 0.02;
+        }
+        else{
+          // Rotation = 0.02; 
+          vehicleAttribute.cameraRotationY += 0.02;
+        }
+        break;
+      }
+      case 39: /*right*/{
+        if (Speed >= 0) {
+          // Rotation = -0.02;
+          vehicleAttribute.cameraRotationY += 0.02;
+        }
+        else{
+          // Rotation = 0.02; 
+          vehicleAttribute.cameraRotationY -= 0.02;
+        }
+        break;
+      }
       case 32:/*space*/if (Speed >= 1) Speed -= 1; if (Speed <= -1) Speed += 1; if (Speed > -1 && Speed < 1) Speed = 0; break;
-      case 82:/*R*/ Speed = 0; PreRotation = 0; Rotation = 0; group.position.set(0,0,0);group.rotation.set(0,0,0); camera.position.set(0,220,-50); break;
+      case 82:/*R*/ {
+        vehicleAttribute.speed = 0; 
+        vehicleAttribute.rotation = 0; 
+        vehicleAttribute.cameraPositionX = 0;
+        vehicleAttribute.cameraPositionY = 220;
+        vehicleAttribute.cameraPositionZ = 50;
+        vehicleAttribute.cameraRotationX = 0;
+        vehicleAttribute.cameraRotationY = 0;
+        vehicleAttribute.cameraRotationZ = 0;
+        Speed = 0; 
+        PreRotation = 0; 
+        Rotation = 0; 
+        group.position.set(0,0,0);
+        group.rotation.set(0,0,0); 
+        // camera.position.set(0,220,50); 
+        break;
+      }
+      case 70:/*F*/ {
+        if (flag) {
+          camera.position.set(0,1000,-3000);
+          vehicleAttribute.cameraPositionX = 0;
+          vehicleAttribute.cameraPositionY = 1000;
+          vehicleAttribute.cameraPositionZ = -3000;
+        }
+        if (!flag) {
+          camera.position.set(0,220,50);
+          vehicleAttribute.cameraPositionX = 0;
+          vehicleAttribute.cameraPositionY = 220;
+          vehicleAttribute.cameraPositionZ = 50;
+        }
+        flag = !flag;
+        break;
+      }
 
     }
   };
@@ -87,12 +158,32 @@ loader.load('././static/scene.gltf',(obj) =>{
   {
     switch(event.keyCode)
     {
-      case 38: /*up*/	 Speed += 0; break;
-      case 40: /*down*/Speed -= 0; break;
-      case 37: /*left*/Rotation = 0; break;
-      case 39: /*right*/Rotation = 0; break;
+      case 38: /*up*/	 Speed += 0; vehicleAttribute.speed += 0;break;
+      case 40: /*down*/Speed -= 0; vehicleAttribute.speed -= 0;break;
+      case 37: /*left*/{
+        if (Speed >= 0) {
+          // Rotation = -0.02;
+          vehicleAttribute.cameraRotationY -= 0;
+        }
+        else{
+          // Rotation = 0.02; 
+          vehicleAttribute.cameraRotationY += 0;
+        }
+        break;
+      }
+      case 39: /*right*/{
+        if (Speed >= 0) {
+          // Rotation = -0.02;
+          vehicleAttribute.cameraRotationY += 0;
+        }
+        else{
+          // Rotation = 0.02; 
+          vehicleAttribute.cameraRotationY -= 0;
+        }
+        break;
+      }
       case 32:/*space*/if (Speed >= 1) Speed -= 1; if (Speed <= -1) Speed += 1; if (Speed > -1 && Speed < 1) Speed = 0; break;
-      case 82:/*R*/Speed = 0; PreRotation = 0; Rotation = 0; group.position.set(0,0,0);group.rotation.set(0,0,0); camera.position.set(0,220,-50); break;
+      
     }
   };
 
@@ -101,24 +192,6 @@ loader.load('././static/scene.gltf',(obj) =>{
 });
 
 
-
-//旋转双面白色平面
-const planeGeometry = new THREE.PlaneGeometry(10000, 10000);
-// let plane = new THREE.Mesh(planeGeometry);
-const textureloader = new THREE.CubeTextureLoader();
-var planematerial;
-textureloader.load("././static/textures/plane.jpg", function(planetexture){
-    planematerial = new THREE.MeshLambertMaterial({
-    color : 0xffffff,
-    map : planetexture,
-    side : DoubleSide
-  });
-});
-
-var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
-meshPlane.rotation.x += 1.57;//旋转平面
-meshPlane.position.y -= 2;//移动位置
-scene.add(meshPlane);
 // renderer.render(scene, camera);
   
 // plane.material = new THREE.MeshBasicMaterial({
@@ -130,16 +203,23 @@ scene.add(meshPlane);
 
 //盒子模型
 let urls = [
-  '././static/textures/posx.jpg','././static/textures/negx.jpg',
-  '././static/textures/posy.jpg','././static/textures/negy.jpg',
-  '././static/textures/posz.jpg','././static/textures/negz.jpg'
+  '../static/textures/posx.jpg','../static/textures/negx.jpg',
+  '../static/textures/posy.jpg','../static/textures/negy.jpg',
+  '../static/textures/posz.jpg','../static/textures/negz.jpg'
 ];
 let boxloader = new THREE.CubeTextureLoader();
 scene.background = boxloader.load(urls);
 
+
+
 // 辅助坐标
-// var axesHelper = new THREE.AxesHelper( 150 );
-// scene.add( axesHelper );
+var axesHelper = new THREE.AxesHelper( 150 );
+scene.add( axesHelper );
+
+//辅助网格
+// var helper = new THREE.GridHelper( 100000, 10000 );
+// scene.add( helper );
+
 
 
 
@@ -183,7 +263,7 @@ const camera = new THREE.PerspectiveCamera(
   0.001,
   10000
 )
-camera.position.set(0, 220, -50)
+camera.position.set(0, 220, 50)
 scene.add(camera)
 group.add(camera)
 
@@ -229,28 +309,35 @@ const tick = () => {
   controls.update()
   
   //Move the vehicle
-  // camera.lookAt(0, 220, -10000)
-  // Speed = vehicleAttribute.speed;
-  // Rotation = vehicleAttribute.rotation;
-  // camera.position.x = vehicleAttribute.cameraPositionX;
-  // camera.position.y = vehicleAttribute.cameraPositionY;
-  // camera.position.z = vehicleAttribute.cameraPositionZ;
-  // camera.rotation.x = vehicleAttribute.cameraRotationX;
-  // camera.rotation.y = vehicleAttribute.cameraRotationY;
-  // camera.rotation.z = vehicleAttribute.cameraRotationZ;
-  camera.lookAt(1000000 * Math.sin(PreRotation), 220, -1000000 * Math.cos(PreRotation))
-  if (Rotation != 0){
-    PreRotation += Rotation;
-    group.rotation.y -= Rotation;
-    if (PreRotation > 2 * Math.PI || PreRotation < 2 * (-Math.PI)){
+  //if (flag){
+  //   camera.lookAt(-1000000 * Math.sin(PreRotation), 220, 1000000 * Math.cos(PreRotation));
+  // }
+  Speed = vehicleAttribute.speed;
+  Rotation = vehicleAttribute.rotation;
+  camera.position.x = vehicleAttribute.cameraPositionX;
+  camera.position.y = vehicleAttribute.cameraPositionY;
+  camera.position.z = vehicleAttribute.cameraPositionZ;
+  group.rotation.x = vehicleAttribute.cameraRotationX;
+  group.rotation.y = vehicleAttribute.cameraRotationY;
+  group.rotation.z = vehicleAttribute.cameraRotationZ;
+  // camera.lookAt(-1000000 * Math.sin(PreRotation), 220, 1000000 * Math.cos(PreRotation));
+  camera.lookAt(-1000000 * Math.sin(vehicleAttribute.cameraRotationY), 220, 1000000 * Math.cos(vehicleAttribute.cameraRotationY));
+  // if (Rotation != 0){
+    // PreRotation += Roation;
+    PreRotation = vehicleAttribute.cameraRotationY;
+    group.rotation.y = PreRotation;
+    if (PreRotation < 2 * (-Math.PI)){
+      PreRotation += 2 * Math.PI;
+    }
+    if (PreRotation > 2 * Math.PI){
       PreRotation -= 2 * Math.PI;
     }
-  }
+  // }
   Rotation = 0;
   ForwardSpeed = Speed * Math.cos(PreRotation);
   RightSpeed = Speed * Math.sin(PreRotation);
-  group.position.z -= ForwardSpeed;
-  group.position.x += RightSpeed;
+  group.position.z += ForwardSpeed;
+  group.position.x -= RightSpeed;
   // camera.position.x -= RightSpeed;
   // camera.position.x += RightSpeed;
   
