@@ -66,38 +66,25 @@ loader.load('../static/scene.gltf',(obj) =>{
   // textloader.load
   mesh.position.set(0,60,250);
   mesh.rotation.set(0,0,0);
-  mesh.scale.set(1,1,1);
+  mesh.scale.set(1,0.5,0.5);
   group.add(mesh);
   scene.add(group);
-
-  //双面平面
-  var planeGeometry = new THREE.PlaneGeometry(10000, 10000);
-  var textureloader = new THREE.TextureLoader();
-  var planematerial;
-  textureloader.load("../static/textures/plane.jpg", function(planetexture){
-      planematerial = new THREE.MeshLambertMaterial({
-      color : 0xffffff,
-      map : planetexture,
-      side : THREE.DoubleSide
-    });
-  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
-  meshPlane.rotation.x += 0.5 * Math.PI;//旋转平面
-  meshPlane.position.y -= 2;//移动位置
-  scene.add(meshPlane);
-  });
-  
-
+    
   var flag = true;
     function onKeyDown(event)
   {
     switch(event.keyCode)
     {
-      case 38: /*up*/	 Speed += 0.5; vehicleAttribute.speed += 0.5;break;
+      case 38: /*up*/	 
+        if(Speed<=8){
+          Speed += 0.5; vehicleAttribute.speed += 0.5;break;
+        }
       case 40: /*down*/Speed -= 0.5; vehicleAttribute.speed -= 0.5;break;
       case 37: /*left*/{
         if (Speed >= 0) {
           // Rotation = -0.02;
           vehicleAttribute.cameraRotationY -= 0.02;
+          RightSpeed = Speed * Math.sin(PreRotation);
         }
         else{
           // Rotation = 0.02; 
@@ -194,10 +181,10 @@ loader.load('../static/scene.gltf',(obj) =>{
 
 // renderer.render(scene, camera);
   
-// plane.material = new THREE.MeshBasicMaterial({
-//     side: THREE.DoubleSide,//双面显示
-//     color: '#eeeeee'//材质颜色
-// });
+/* plane.material = new THREE.MeshBasicMaterial({
+    side: THREE.DoubleSide,//双面显示
+    color: '#eeeeee'//材质颜色
+}); */
 
 
 
@@ -263,7 +250,7 @@ const camera = new THREE.PerspectiveCamera(
   0.001,
   10000
 )
-camera.position.set(0, 220, 50)
+camera.position.set(0, 220, 0)
 scene.add(camera)
 group.add(camera)
 
@@ -350,5 +337,294 @@ const tick = () => {
   // Call tick again on the next frame
   window.requestAnimationFrame(tick)
 }
-
 tick();
+  
+//双面平面
+  //场景架设
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/plane.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.x += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.z += 1000;
+  meshPlane.position.y -= 2;//移动位置
+  scene.add(meshPlane);
+  });//加入直线地面1
+  
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/plane.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.x += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.z += 5000;
+  meshPlane.position.y -= 2;//移动位置
+  scene.add(meshPlane);
+  });//加入直线地面2
+
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/plane.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.x += 0.5 * Math.PI;//旋转平面
+  meshPlane.rotation.z += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.z += 8000;
+  meshPlane.position.x -= 1000;
+  meshPlane.position.y -= 2;//移动位置
+  scene.add(meshPlane);
+  });//加入转弯地面1
+  
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+    var textureloader = new THREE.TextureLoader();
+    var planematerial;
+    textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+        planematerial = new THREE.MeshLambertMaterial({
+        color : 0xffffff,
+        map : planetexture,
+        side : THREE.DoubleSide
+      });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.y += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.x += 1000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入左侧景1
+
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+    var textureloader = new THREE.TextureLoader();
+    var planematerial;
+    textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+        planematerial = new THREE.MeshLambertMaterial({
+        color : 0xffffff,
+        map : planetexture,
+        side : THREE.DoubleSide
+      });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.y += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.x -= 1000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道1右侧景1
+  
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.y += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.x += 1000;
+  meshPlane.position.z += 2000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道1左侧景2
+
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.y += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.x -= 1000;
+  meshPlane.position.z += 2000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道1右侧景2
+
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.y += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.x += 1000;
+  meshPlane.position.z += 4000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道1左侧景3
+
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.y += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.x -= 1000;
+  meshPlane.position.z += 4000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道1右侧景3
+
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.y += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.x += 1000;
+  meshPlane.position.z += 6000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道1左侧景4
+
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.y += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.x -= 1000;
+  meshPlane.position.z += 6000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道1右侧景4
+
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.rotation.y += 0.5 * Math.PI;//旋转平面
+  meshPlane.position.x += 1000;
+  meshPlane.position.z += 8000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道1转角处街景1
+  
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.position.z += 9000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道1转角处街景2
+
+  //转弯后变为街道2
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.position.x -= 2000;
+  meshPlane.position.z += 9000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道2左侧街景1
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.position.x -= 2000;
+  meshPlane.position.z += 7000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道2右侧街景1
+
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.position.x -= 4000;
+  meshPlane.position.z += 9000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道2左侧街景1
+  var planeGeometry = new THREE.PlaneGeometry(2000, 4000);
+  var textureloader = new THREE.TextureLoader();
+  var planematerial;
+  textureloader.load("../static/textures/StreetView.jpg", function(planetexture){
+      planematerial = new THREE.MeshLambertMaterial({
+      color : 0xffffff,
+      map : planetexture,
+      side : THREE.DoubleSide
+    });
+  var meshPlane = new THREE.Mesh(planeGeometry, planematerial);
+  meshPlane.position.x -= 4000;
+  meshPlane.position.z += 7000;
+  meshPlane.position.y += 1500;//移动位置
+  scene.add(meshPlane);
+  });//加入街道2右侧街景1
+
+  
+
+  
+
+  
+
+
+
