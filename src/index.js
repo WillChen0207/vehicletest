@@ -620,6 +620,8 @@ tick();
   scene.add(meshPlane);
   });//加入街道2右侧街景1
 
+  //test
+
   
 
   
