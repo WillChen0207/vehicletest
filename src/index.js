@@ -11,6 +11,7 @@ import { BasisTextureLoader }  from 'three/examples/jsm/loaders/BasisTextureLoad
  */
 import * as dat from 'dat.gui'
 import { DoubleSide, TextureLoader } from 'three'
+import { prefetch } from 'webpack'
 const gui = new dat.GUI()
 var vehicleAttribute = new function(){
   this.speed = 0;
@@ -68,6 +69,7 @@ loader.load('../static/scene.gltf',(obj) =>{
   mesh.rotation.set(0,0,0);
   mesh.scale.set(1,0.5,0.5);
   group.add(mesh);
+  group.add(camera);
   scene.add(group);
     
   var flag = true;
@@ -82,24 +84,23 @@ loader.load('../static/scene.gltf',(obj) =>{
       case 40: /*down*/Speed -= 0.5; vehicleAttribute.speed -= 0.5;break;
       case 37: /*left*/{
         if (Speed >= 0) {
-          // Rotation = -0.02;
-          vehicleAttribute.cameraRotationY -= 0.02;
-          RightSpeed = Speed * Math.sin(PreRotation);
+          Rotation = -0.02;
+          // vehicleAttribute.cameraRotationY -= 0.02;
         }
         else{
-          // Rotation = 0.02; 
-          vehicleAttribute.cameraRotationY += 0.02;
+          Rotation = 0.02; 
+          // vehicleAttribute.cameraRotationY += 0.02;
         }
         break;
       }
       case 39: /*right*/{
         if (Speed >= 0) {
-          // Rotation = -0.02;
-          vehicleAttribute.cameraRotationY += 0.02;
+          Rotation = 0.02;
+          // vehicleAttribute.cameraRotationY += 0.02;
         }
         else{
-          // Rotation = 0.02; 
-          vehicleAttribute.cameraRotationY -= 0.02;
+          Rotation = -0.02; 
+          // vehicleAttribute.cameraRotationY -= 0.02;
         }
         break;
       }
@@ -149,23 +150,23 @@ loader.load('../static/scene.gltf',(obj) =>{
       case 40: /*down*/Speed -= 0; vehicleAttribute.speed -= 0;break;
       case 37: /*left*/{
         if (Speed >= 0) {
-          // Rotation = -0.02;
-          vehicleAttribute.cameraRotationY -= 0;
+          Rotation = -0;
+          // vehicleAttribute.cameraRotationY -= 0;
         }
         else{
-          // Rotation = 0.02; 
-          vehicleAttribute.cameraRotationY += 0;
+          Rotation = 0; 
+          // vehicleAttribute.cameraRotationY += 0;
         }
         break;
       }
       case 39: /*right*/{
         if (Speed >= 0) {
-          // Rotation = -0.02;
-          vehicleAttribute.cameraRotationY += 0;
+          Rotation = 0;
+          // vehicleAttribute.cameraRotationY += 0;
         }
         else{
-          // Rotation = 0.02; 
-          vehicleAttribute.cameraRotationY -= 0;
+          Rotation = 0; 
+          // vehicleAttribute.cameraRotationY -= 0;
         }
         break;
       }
@@ -252,7 +253,7 @@ const camera = new THREE.PerspectiveCamera(
 )
 camera.position.set(0, 220, 0)
 scene.add(camera)
-group.add(camera)
+// group.add(camera)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
@@ -300,18 +301,19 @@ const tick = () => {
   //   camera.lookAt(-1000000 * Math.sin(PreRotation), 220, 1000000 * Math.cos(PreRotation));
   // }
   Speed = vehicleAttribute.speed;
-  Rotation = vehicleAttribute.rotation;
+  // Rotation = vehicleAttribute.rotation;
   camera.position.x = vehicleAttribute.cameraPositionX;
   camera.position.y = vehicleAttribute.cameraPositionY;
   camera.position.z = vehicleAttribute.cameraPositionZ;
-  group.rotation.x = vehicleAttribute.cameraRotationX;
-  group.rotation.y = vehicleAttribute.cameraRotationY;
-  group.rotation.z = vehicleAttribute.cameraRotationZ;
+  // group.rotation.x = vehicleAttribute.cameraRotationX;
+  // group.rotation.y = vehicleAttribute.cameraRotationY;
+  // group.rotation.z = vehicleAttribute.cameraRotationZ;
   // camera.lookAt(-1000000 * Math.sin(PreRotation), 220, 1000000 * Math.cos(PreRotation));
-  camera.lookAt(-1000000 * Math.sin(vehicleAttribute.cameraRotationY), 220, 1000000 * Math.cos(vehicleAttribute.cameraRotationY));
-  // if (Rotation != 0){
-    // PreRotation += Roation;
-    PreRotation = vehicleAttribute.cameraRotationY;
+  camera.lookAt(1000000 * Math.sin(PreRotation), 220, 1000000 * Math.cos(PreRotation));
+  if (Rotation != 0){
+    PreRotation -= Rotation;
+    vehicleAttribute.rotation = PreRotation;
+    // PreRotation = vehicleAttribute.cameraRotationY;
     group.rotation.y = PreRotation;
     if (PreRotation < 2 * (-Math.PI)){
       PreRotation += 2 * Math.PI;
@@ -319,10 +321,10 @@ const tick = () => {
     if (PreRotation > 2 * Math.PI){
       PreRotation -= 2 * Math.PI;
     }
-  // }
+  }
   Rotation = 0;
   ForwardSpeed = Speed * Math.cos(PreRotation);
-  RightSpeed = Speed * Math.sin(PreRotation);
+  RightSpeed = -Speed * Math.sin(PreRotation);
   group.position.z += ForwardSpeed;
   group.position.x -= RightSpeed;
   // camera.position.x -= RightSpeed;
