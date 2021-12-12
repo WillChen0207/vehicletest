@@ -38,6 +38,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "cannon": "^0.6.2",
     "dat.gui": "^0.7.7"
   }
 }

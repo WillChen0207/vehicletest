@@ -1442,6 +1442,11 @@
   "resolved" "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001054.tgz"
   "version" "1.0.30001054"
 
+"cannon@^0.6.2":
+  "integrity" "sha1-HnvHLdWEGYLzwQTCvFeL+k+xxXI="
+  "resolved" "https://repo.huaweicloud.com/repository/npm/cannon/-/cannon-0.6.2.tgz"
+  "version" "0.6.2"
+
 "chalk@^2.0.0", "chalk@^2.4.2", "chalk@2.4.2":
   "integrity" "sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ=="
   "resolved" "https://registry.npmjs.org/chalk/-/chalk-2.4.2.tgz"
