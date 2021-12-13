@@ -1,6 +1,6 @@
 import './style/main.css'
 import * as THREE from 'three'
-import * as CANNON from 'cannon'
+// import * as CANNON from 'cannon'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader }  from 'three/examples/jsm/loaders/GLTFLoader.js'
 
@@ -55,32 +55,27 @@ const canvas = document.querySelector('#webgl')
 // Scene and physics
 const scene = new THREE.Scene()
 scene.fog = new THREE.Fog( 0xf2f7ff, 1, 100000 );
-let world = new CANNON.World();
-world.gravity.set(0, -10, 0);
-world.broadphase = new CANNON.NaiveBroadphase();
+// let world = new CANNON.World();
+// world.gravity.set(0, -10, 0);
+// world.broadphase = new CANNON.NaiveBroadphase();
 
 /**
  * Object
  */
-// const geometry = new THREE.IcosahedronGeometry(20, 1)
-// const material = new THREE.MeshNormalMaterial()
-// // Material Props.
-// material.wireframe = true
-// // Create Mesh & Add To Scene
-// const mesh = new THREE.Mesh(geometry, material)
-// scene.add(mesh)
 
 // 导入gltf的模型文件
 var group = new THREE.Group();
 var loader = new GLTFLoader();
+var Obj = new THREE.BufferGeometry();
 var ForwardSpeed = 0, RightSpeed = 0, Rotation = 0, PreRotation = 0,Speed = 0;
-var carBody = new CANNON.Body({
-  mass : 10,
-  position : new CANNON.Vec3(0, 60, 250)
-});
-world.add(carBody);
+// var carBody = new CANNON.Body({
+//   mass : 10,
+//   position : new CANNON.Vec3(0, 60, 250)
+// });
+// world.add(carBody);
 loader.load('../static/scene.gltf',(obj) =>{
   var mesh = obj.scene;
+  Obj = obj;
   // var textloader = new TextureLoader();
   // textloader.load
   mesh.position.set(0,60,250);
@@ -288,6 +283,11 @@ var ambient = new THREE.AmbientLight(0x444444);//创建一个环境光
 scene.add(ambient);
 var dirLight = new THREE.DirectionalLight(0xffffff);//创建一个白色点光源
 dirLight.position.set(0, 650, -650);
+dirLight.castShadow = true;//开启点光源生成动态投影
+dirLight.lookAt(scene);
+scene.add(dirLight);
+var dirLight = new THREE.DirectionalLight(0xffffff);//创建另一个白色点光源
+dirLight.position.set(0, 650, 650);
 dirLight.castShadow = true;//开启点光源生成动态投影
 dirLight.lookAt(scene);
 scene.add(dirLight);
@@ -686,7 +686,6 @@ tick();
   scene.add(meshPlane);
   array.push(meshPlane);
   });//加入街道2左侧街景2
-
   var planeGeometry = new THREE.PlaneGeometry(4000, 4000);
   var textureloader = new THREE.TextureLoader();
   var planematerial;
@@ -705,36 +704,56 @@ tick();
   array.push(meshPlane);
   });//加入街道2右侧街景2
 
- 
-  var raycaster = new THREE.Raycaster(); 
-    
-  //用来保存鼠标坐标信息
-  var mouse = new THREE.Vector2();  
-  
-  //添加鼠标移动事件，检测鼠标的移动
-  document.addEventListener('mousemove', onDocumentMouseMove, false);  
-  
-  function onDocumentMouseMove(event) {  
-      
-      //获取鼠标的x，y坐标
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;  
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;  
-      
-          }  
-          
-  function render(){
-      
-      //更新鼠标和射线位置
-      raycaster.setFromCamera(mouse, camera); 
-      
-      renderer.render(scene, camera);  
-      raycaster.setFromCamera(mouse, camera);  
+
+
+
+ //检测球体sphereMesh网格模型是否和立方体网格模型boxMesh发生了碰撞，也就是两个模型是否是相互交叉状态
+//设置球体位于不同位置，用来测试碰撞
+// Obj.position.x = 40; //两个网格模型不交叉
+// Obj.position.x = 25; //两个网格模型相互交叉
+//声明一个变量用来表示是否碰撞
+console.log(array);
+var bool = false;
+// threejs的几何体默认情况下几何中心在场景中坐标是坐标原点。
+// 可以通过position属性或.getWorldPosition()方法获得模型几何中心的世界坐标
+var centerCoord = Obj.position.clone();
+//球体网格模型几何体的所有顶点数据
+var vertices = Obj.setAttribute('position', new THREE.BufferAttribute( ));
+//1.循环遍历球体几何体所有顶点坐标
+//2.把几何体的每一个顶点和几何体中心构建一个射线
+//3.
+for (var i = 0; i < vertices.length; i++) {
+  // vertices[i]获得几何体索引是i的顶点坐标，
+  // 注意执行.clone()返回一个新的向量，以免改变几何体顶点坐标值
+  // 几何体的顶点坐标要执行该几何体绑定模型对象经过的旋转平移缩放变换
+  // 几何体顶点经过的变换可以通过模型的本地矩阵属性.matrix或世界矩阵属性.matrixWorld获得
+  var vertexWorldCoord = vertices[i].clone().applyMatrix4(sphereMesh.matrixWorld);
+  var dir = new THREE.Vector3(); //创建一个向量
+  // 几何体顶点坐标和几何体中心坐标构成的方向向量
+  dir.subVectors(vertexWorldCoord, centerCoord);
+
+  //Raycaster构造函数创建一个射线投射器对象，参数1、参数2改变的是该对象的射线属性.ray
+  // 参数1：射线的起点
+  // 参数2：射线的方向，注意归一化的时候，需要先克隆,否则后面会执行dir.length()计算向量长度结果是1
+  var raycaster = new THREE.Raycaster(centerCoord, dir.clone().normalize());
+
+  // 计算射线和参数1中的模型对象是否相交，参数1数组中可以设置多个模型模型对象，下面参数只设置了立方体网格模型
+  var intersects = raycaster.intersectObjects(array);
+  if (intersects.length > 0) { // 判断参数[boxMesh]中模型对象是否与射线相交
+    // intersects[0].distance：射线起点与交叉点之间的距离(交叉点：射线和模型表面交叉点坐标)
+    // dir.length()：球体顶点和球体几何中心构成向量的长度
+    // 通过距离大小比较判断是否碰撞
+    // intersects[0].distance小于dir.length()，说明交叉点的位置在射线起点和球体几何体顶点之间，
+    //而交叉点又在立方体表面上,也就是说立方体部分表面插入到了球体里面
+    if (intersects[0].distance < dir.length()) {
+      //循环遍历几何体顶点，每一个顶点都要创建一个射线，进行一次交叉拾取计算，只要有一个满足上面的距离条件，就发生了碰撞
+      bool = true;
+    }
   }
-
-
-  
-
-  
-
-
-
+}
+//在浏览器控制显示当前两个模型对象是否碰撞(也就是相互交叉状态)
+if (bool) {
+  console.log('碰撞');
+} else {
+  console.log('未碰撞');
+}
