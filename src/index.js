@@ -1,9 +1,8 @@
 import './style/main.css'
 import * as THREE from 'three'
-// import * as CANNON from 'cannon'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader }  from 'three/examples/jsm/loaders/GLTFLoader.js'
-import * as CANNON from 'cannon'
+// import * as CANNON from 'cannon'
 
 /**
  * GUI Controls
@@ -11,7 +10,6 @@ import * as CANNON from 'cannon'
 import * as dat from 'dat.gui'
 import { MeshLambertMaterial, Vector3} from 'three'
 // import { DoubleSide, TextureLoader } from 'three'
-// import { prefetch } from 'webpack'
 const gui = new dat.GUI()
 var vehicleAttribute = new function(){
   this.speed = 0;
@@ -36,26 +34,31 @@ gui.add(vehicleAttribute, "cameraRotationY", -2 * Math.PI, 2 * Math.PI).listen()
 gui.add(vehicleAttribute, "cameraRotationZ", -2 * Math.PI, 2 * Math.PI).listen();
 
 
-
-
-
 /**
  * Base
  */
 // Canvas
 const canvas = document.querySelector('#webgl')
-var UserData = document.body;
-UserData.addbe
 
 // Scene and physics
 const scene = new THREE.Scene()
 scene.fog = new THREE.Fog( 0xf2f7ff, 1, 100000 );
-
-var world = new CANNON.World();
-world.gravity.set(0, -10, 0);
-world.broadphase = new CANNON.NaiveBroadphase();
-world.solver.iterations = 5;//解算器的迭代次数，越高越精确但是性能越低
-world.defaultContactMaterial.friction = 0.5;//摩擦
+var titlearray = ['_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','🚗'];
+var timer = window.setInterval(function(){
+  titlechange();
+}, 1000);
+function titlechange(){
+  var tmp = titlearray[0];
+  var titleText = "";
+  for (var i = 0; i <= 19; i++){
+    titlearray[i] = titlearray[i+1];
+  }
+  titlearray[20] = tmp;
+  for (var i = 0; i <= 20; i++){
+    titleText += titlearray[i];
+  }
+  document.getElementById("titletext").innerHTML = titleText;
+}
 
 /**
  * Object
@@ -106,18 +109,8 @@ var cubeMaterial = new MeshLambertMaterial({
 var cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
 cubeMesh.position.set(0, 0, 0);
 cubeMesh.castShadow = true;
-var cubeSize = new THREE.Vector3(400, 350, 600);
 scene.add(cubeMesh);
 
-var cubeShape;
-cubeShape = new CANNON.Box(new CANNON.Vec3(cubeSize.x/2, cubeSize.y/2, cubeSize.z/2));
-var cubeBody = new CANNON.Body({
-  mass : 200,
-  material : new CANNON.Material({friction : 0.5})
-});
-cubeBody.addShape(cubeShape);
-cubeBody.position.set(0, 60, 250);
-world.addBody(cubeBody);
 
 // 导入gltf的模型文件
 var group = new THREE.Group();
@@ -242,10 +235,7 @@ loader.load('../static/scene.gltf',(obj) =>{
         flag = !flag;
         break;
       }
-      case 67:/*C*/{
-        collisionCheck();
-        break;
-      }
+      
 
     }
   };
@@ -307,8 +297,6 @@ var floor = new THREE.Mesh();
 var loader = new GLTFLoader();
 loader.load('../static/floor2.gltf',(obj) =>{
   var mesh = obj.scene;
-  // var textloader = new TextureLoader();
-  // textloader.load
   mesh.position.set(0, 1900, 50000);
   mesh.rotation.set(0, Math.PI, 0);
   mesh.scale.set(1000, 1000, 1000);
@@ -418,19 +406,12 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 const clock = new THREE.Clock()
 const tick = () => {
   const elapsedTime = clock.getElapsedTime()
-  //mesh.rotation.y += 0.01 * Math.sin(1)
-  //mesh.rotation.y += 0.01 * Math.sin(1)
-  // mesh.rotation.z += 0.01 * Math.sin(1)
 
   // Update controls
   controls.update()
   
   //Move the vehicle
-  //if (flag){
-  //   camera.lookAt(-1000000 * Math.sin(PreRotation), 220, 1000000 * Math.cos(PreRotation));
-  // }
   Speed = vehicleAttribute.speed;
-  // Rotation = vehicleAttribute.rotation;
   camera.position.x = vehicleAttribute.cameraPositionX;
   camera.position.y = vehicleAttribute.cameraPositionY;
   camera.position.z = vehicleAttribute.cameraPositionZ;
@@ -493,8 +474,7 @@ const tick = () => {
   vehicleAttribute.positionX = group.position.x;
   vehicleAttribute.positionY = group.position.y;
   vehicleAttribute.positionZ = group.position.z;
-
-
+  SpeedShow();
 
   // Render
   //camera.lookAt(group);
@@ -506,23 +486,17 @@ const tick = () => {
   window.requestAnimationFrame(tick);
 }
 tick();
-  
 
-  //场景架设
-  // var array = [];
-
-  
 function collisionCheck(){
   //声明一个变量用来表示是否碰撞
   var bool = false;
   // threejs的几何体默认情况下几何中心在场景中坐标是坐标原点。
   // 可以通过position属性或.getWorldPosition()方法获得模型几何中心的世界坐标
   var centerCoord = cubeMesh.position.clone();
-  //球体网格模型几何体的所有顶点数据
+  //网格模型几何体的所有顶点数据
   var vertices = cubeGeometry.vertices;
-  //1.循环遍历球体几何体所有顶点坐标
+  //1.循环遍历几何体所有顶点坐标
   //2.把几何体的每一个顶点和几何体中心构建一个射线
-  //3.
   for (var i = 0; i < vertices.length; i++) {
     // vertices[i]获得几何体索引是i的顶点坐标，
     // 注意执行.clone()返回一个新的向量，以免改变几何体顶点坐标值
@@ -540,12 +514,12 @@ function collisionCheck(){
 
     // 计算射线和参数1中的模型对象是否相交，参数1数组中可以设置多个模型模型对象，下面参数只设置了立方体网格模型
     var intersects = raycaster.intersectObjects([floor], true);
-    if (intersects.length > 0) { // 判断参数[boxMesh]中模型对象是否与射线相交
+    if (intersects.length > 0) { // 判断参数[floor]中模型对象是否与射线相交
       // intersects[0].distance：射线起点与交叉点之间的距离(交叉点：射线和模型表面交叉点坐标)
-      // dir.length()：球体顶点和球体几何中心构成向量的长度
+      // dir.length()：球体顶点和几何体几何中心构成向量的长度
       // 通过距离大小比较判断是否碰撞
-      // intersects[0].distance小于dir.length()，说明交叉点的位置在射线起点和球体几何体顶点之间，
-      //而交叉点又在立方体表面上,也就是说立方体部分表面插入到了球体里面
+      // intersects[0].distance小于dir.length()，说明交叉点的位置在射线起点和几何体顶点之间，
+      //而交叉点又在立方体表面上,也就是说立方体部分表面插入到了几何体里面
       if (intersects[0].distance < dir.length()) {
         //循环遍历几何体顶点，每一个顶点都要创建一个射线，进行一次交叉拾取计算，只要有一个满足上面的距离条件，就发生了碰撞
         bool = true;
@@ -553,14 +527,8 @@ function collisionCheck(){
     }
   }
   return bool;
-  //在浏览器控制显示当前两个模型对象是否碰撞(也就是相互交叉状态)
-  // if (bool) {
-  //   console.log('碰撞');
-  //   Speed /= 2;
-  //   vehicleAttribute.speed /= 2;
-  // } else {
-  //   console.log('未碰撞');
-  // }
 }
 
-
+function SpeedShow(){
+  document.getElementById("speedshow").innerHTML = Speed.toFixed(1);
+}

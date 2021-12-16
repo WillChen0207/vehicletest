@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-    <title>Webpack THREE.js Template</title>
+    <title id="titletext"></title>
     <style>
       html,
       body{
@@ -17,14 +17,27 @@
         height: 100vh;
         border: 2px solid red;
       }
+      #info{
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        text-align: center;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+        z-index: 1; /* TODO Solve this in HTML */
+        font-size: 30px;
+      }
     </style>
     
   </head>
   <body>
-    <canvas id="webgl"></canvas>
-    <!-- <script src="../three.js-master/three.js/build/three.js"></script>
-    <script src="../three.js-master/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="../three.js-master/examples/js/controls/OrbitControls.js"></script> -->
+    <div id="info" >Speed:<div id="speedshow"></div></div>
+    <div><canvas id="webgl"></canvas></div>
   </body>
 </html>
 
