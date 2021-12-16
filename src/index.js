@@ -15,8 +15,8 @@ var vehicleAttribute = new function(){
   this.speed = 0;
   this.rotation = 0;
   this.cameraPositionX = 0;
-  this.cameraPositionY = 160;
-  this.cameraPositionZ = 50;
+  this.cameraPositionY = 390;
+  this.cameraPositionZ = -150;
   this.cameraRotationX = 0;
   this.cameraRotationY = 0;
   this.cameraRotationZ = 0;
@@ -122,7 +122,7 @@ loader.load('../static/scene.gltf',(obj) =>{
   // textloader.load
   mesh.position.set(0, 0, 250);
   mesh.rotation.set(0,0,0);
-  mesh.scale.set(1, 1, 1);
+  mesh.scale.set(3, 3, 3);
   mesh.castShadow = true;
   group.add(mesh);
   group.add(camera);
@@ -201,36 +201,21 @@ loader.load('../static/scene.gltf',(obj) =>{
         }
       }
       case 82:/*R*/ {
-        vehicleAttribute.speed = 0; 
-        vehicleAttribute.rotation = 0; 
-        vehicleAttribute.cameraPositionX = 0;
-        vehicleAttribute.cameraPositionY = 160;
-        vehicleAttribute.cameraPositionZ = 50;
-        vehicleAttribute.cameraRotationX = 0;
-        vehicleAttribute.cameraRotationY = 0;
-        vehicleAttribute.cameraRotationZ = 0;
-        Speed = 0; 
-        PreRotation = 0; 
-        Rotation = 0; 
-        group.position.set(0,0,0);
-        cubeMesh.position.set(0,0,0);
-        group.rotation.set(0,0,0); 
-        cubeMesh.rotation.set(0,0,0); 
-        // camera.position.set(0,220,50); 
+        Initpos();
         break;
       }
       case 70:/*F*/ {
         if (flag) {
-          camera.position.set(0, 210, -700);
+          camera.position.set(0, 600, -2500);
           vehicleAttribute.cameraPositionX = 0;
-          vehicleAttribute.cameraPositionY = 210;
-          vehicleAttribute.cameraPositionZ = -700;
+          vehicleAttribute.cameraPositionY = 600;
+          vehicleAttribute.cameraPositionZ = -2500;
         }
         if (!flag) {
-          camera.position.set(0, 160, 50);
+          camera.position.set(0, 390, -150);
           vehicleAttribute.cameraPositionX = 0;
-          vehicleAttribute.cameraPositionY = 160;
-          vehicleAttribute.cameraPositionZ = 50;
+          vehicleAttribute.cameraPositionY = 390;
+          vehicleAttribute.cameraPositionZ = -150;
         }
         flag = !flag;
         break;
@@ -295,7 +280,7 @@ loader.load('../static/scene.gltf',(obj) =>{
 
 var floor = new THREE.Mesh();
 var loader = new GLTFLoader();
-loader.load('../static/floor2.gltf',(obj) =>{
+loader.load('../static/floor3.gltf',(obj) =>{
   var mesh = obj.scene;
   mesh.position.set(0, 1900, 50000);
   mesh.rotation.set(0, Math.PI, 0);
@@ -315,8 +300,8 @@ let boxloader = new THREE.CubeTextureLoader();
 scene.background = boxloader.load(urls);
 
 // 辅助坐标
-var axesHelper = new THREE.AxesHelper( 150 );
-scene.add( axesHelper );
+// var axesHelper = new THREE.AxesHelper( 150 );
+// scene.add( axesHelper );
 
 //辅助网格
 // var helper = new THREE.GridHelper( 100000, 10000 );
@@ -445,28 +430,11 @@ const tick = () => {
       // }
       // group.rotation.y = PreRotation;
       // cubeMesh.rotation.y = PreRotation;
-      Speed = 0;
-      vehicleAttribute.speed = 0;
       alert("You crashed. \nYou will respawn.");
-      vehicleAttribute.speed = 0; 
-      vehicleAttribute.rotation = 0; 
-      vehicleAttribute.cameraPositionX = 0;
-      vehicleAttribute.cameraPositionY = 160;
-      vehicleAttribute.cameraPositionZ = 50;
-      vehicleAttribute.cameraRotationX = 0;
-      vehicleAttribute.cameraRotationY = 0;
-      vehicleAttribute.cameraRotationZ = 0;
-      Speed = 0; 
-      PreRotation = 0; 
-      Rotation = 0; 
-      group.position.set(0,0,0);
-      cubeMesh.position.set(0,0,0);
-      group.rotation.set(0,0,0); 
-      cubeMesh.rotation.set(0,0,0); 
+      Initpos();
     }
   }
   camera.lookAt(10000000 * Math.sin(PreRotation), 220, 10000000 * Math.cos(PreRotation))
-  // camera.lookAt(new Vector3(group.position.x - 100 *RightSpeed, group.position.y + 20, group.position.z + 600 + ForwardSpeed));
   group.position.z += ForwardSpeed;
   cubeMesh.position.z += ForwardSpeed;
   group.position.x -= RightSpeed;
@@ -475,6 +443,10 @@ const tick = () => {
   vehicleAttribute.positionY = group.position.y;
   vehicleAttribute.positionZ = group.position.z;
   SpeedShow();
+  if (group.position.z <= -25000){
+    alert("恭喜你找到彩蛋！\n制作人：陈诺言 戴梓莘\n有些时候，我们是需要回头看看走过的路。");
+    Initpos();
+  }
 
   // Render
   //camera.lookAt(group);
@@ -531,4 +503,23 @@ function collisionCheck(){
 
 function SpeedShow(){
   document.getElementById("speedshow").innerHTML = Speed.toFixed(1);
+}
+
+function Initpos(){
+  Speed = 0;
+  vehicleAttribute.speed = 0;
+  vehicleAttribute.rotation = 0; 
+  vehicleAttribute.cameraPositionX = 0;
+  vehicleAttribute.cameraPositionY = 390;
+  vehicleAttribute.cameraPositionZ = -150;
+  vehicleAttribute.cameraRotationX = 0;
+  vehicleAttribute.cameraRotationY = 0;
+  vehicleAttribute.cameraRotationZ = 0;
+  Speed = 0; 
+  PreRotation = 0; 
+  Rotation = 0; 
+  group.position.set(0,0,0);
+  cubeMesh.position.set(0,0,0);
+  group.rotation.set(0,0,0); 
+  cubeMesh.rotation.set(0,0,0); 
 }
