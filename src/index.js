@@ -9,7 +9,7 @@ import * as CANNON from 'cannon'
  * GUI Controls
  */
 import * as dat from 'dat.gui'
-import { MeshLambertMaterial } from 'three'
+import { MeshLambertMaterial, Vector3} from 'three'
 // import { DoubleSide, TextureLoader } from 'three'
 // import { prefetch } from 'webpack'
 const gui = new dat.GUI()
@@ -17,28 +17,24 @@ var vehicleAttribute = new function(){
   this.speed = 0;
   this.rotation = 0;
   this.cameraPositionX = 0;
-  this.cameraPositionY = 220;
+  this.cameraPositionY = 160;
   this.cameraPositionZ = 50;
   this.cameraRotationX = 0;
   this.cameraRotationY = 0;
   this.cameraRotationZ = 0;
-  // this.radius = 0;
-  // this.segments = 90;
-  // this.thetaStart = 0;
-  // this.thetaLength = 0;
+  this.positionX;
+  this.positionY;
+  this.positionZ;
 };
-gui.add(vehicleAttribute,"speed", -100, 100).listen();
-gui.add(vehicleAttribute,"rotation", -0.1, 0.1).listen();
-// gui.add(vehicleAttribute,"radius", -10, 10).listen();
-// gui.add(vehicleAttribute,"segments", -0.1, 0.1).listen();
-// gui.add(vehicleAttribute,"thetaStart", -0.1, 0.1).listen();
-// gui.add(vehicleAttribute,"thetaLength", 0, Math.PI * 2).listen();
-gui.add(vehicleAttribute,"cameraPositionX", -2000, 3000).listen();
-gui.add(vehicleAttribute,"cameraPositionY", -2000, 3000).listen();
-gui.add(vehicleAttribute,"cameraPositionZ", -2000, 3000).listen();
-gui.add(vehicleAttribute,"cameraRotationX", -2 * Math.PI, 2 * Math.PI).listen();
-gui.add(vehicleAttribute,"cameraRotationY", -2 * Math.PI, 2 * Math.PI).listen();
-gui.add(vehicleAttribute,"cameraRotationZ", -2 * Math.PI, 2 * Math.PI).listen();
+gui.add(vehicleAttribute, "speed", -100, 100).listen();
+gui.add(vehicleAttribute, "rotation", -0.1, 0.1).listen();
+gui.add(vehicleAttribute, "cameraPositionX", -2000, 3000).listen();
+gui.add(vehicleAttribute, "cameraPositionY", -2000, 3000).listen();
+gui.add(vehicleAttribute, "cameraPositionZ", -2000, 3000).listen();
+gui.add(vehicleAttribute, "cameraRotationX", -2 * Math.PI, 2 * Math.PI).listen();
+gui.add(vehicleAttribute, "cameraRotationY", -2 * Math.PI, 2 * Math.PI).listen();
+gui.add(vehicleAttribute, "cameraRotationZ", -2 * Math.PI, 2 * Math.PI).listen();
+
 
 
 
@@ -76,14 +72,14 @@ var cubeGeometry = new THREE.Geometry();
         //  |/      |/
         //  v2------v3
 var vertices = [
-  new THREE.Vector3(-200, 400, -400),//0
-  new THREE.Vector3(200, 400, -400),//1
-  new THREE.Vector3(200, 50, -400),//2
-  new THREE.Vector3(-200, 50, -400),//3
-  new THREE.Vector3(-200, 50, 200),//4
-  new THREE.Vector3(-200, 400, 200),//5
-  new THREE.Vector3(200, 400, 200),//6
-  new THREE.Vector3(200, 50, 200)//7
+  new THREE.Vector3(-200, 350, -400),//0
+  new THREE.Vector3(200, 350, -400),//1
+  new THREE.Vector3(200, 0, -400),//2
+  new THREE.Vector3(-200, 0, -400),//3
+  new THREE.Vector3(-200, 0, 200),//4
+  new THREE.Vector3(-200, 350, 200),//5
+  new THREE.Vector3(200, 350, 200),//6
+  new THREE.Vector3(200, 0, 200)//7
 ];//total:x, y, z = 400, 350, 600
 cubeGeometry.vertices = vertices;
 var cubeFaces = [
@@ -105,7 +101,7 @@ cubeGeometry.computeFaceNormals();//生成法向量
 var cubeMaterial = new MeshLambertMaterial({
   color : 0xeeeeee,
   transparent : true,
-  opacity : 0.6
+  opacity : 0
 });
 var cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
 cubeMesh.position.set(0, 0, 0);
@@ -131,17 +127,24 @@ loader.load('../static/scene.gltf',(obj) =>{
   var mesh = obj.scene;
   // var textloader = new TextureLoader();
   // textloader.load
-  mesh.position.set(0,60,250);
+  mesh.position.set(0, 0, 250);
   mesh.rotation.set(0,0,0);
-  mesh.scale.set(1, 0.5, 0.5);
+  mesh.scale.set(1, 1, 1);
   mesh.castShadow = true;
   group.add(mesh);
   group.add(camera);
+  vehicleAttribute.positionX = group.position.x;
+  vehicleAttribute.positionY = group.position.y;
+  vehicleAttribute.positionZ = group.position.z;
+  gui.add(vehicleAttribute, "positionX").listen();
+  gui.add(vehicleAttribute, "positionY").listen();
+  gui.add(vehicleAttribute, "positionZ").listen();
   scene.add(group);
 
 
     
   var flag = true;
+  var maxSpeed = 60;
     function onKeyDown(event)
   {
     switch(event.keyCode)
@@ -149,20 +152,20 @@ loader.load('../static/scene.gltf',(obj) =>{
       case 38: /*up*/	{
         Speed += 0.5; 
         vehicleAttribute.speed += 0.5;
-        // if (Speed >= 30){
-        //   Speed = 30;
-        //   vehicleAttribute.speed = 30;
-        // }
+        if (Speed >= maxSpeed){
+          Speed = maxSpeed;
+          vehicleAttribute.speed = maxSpeed;
+        }
         break;
       }
         
       case 40: /*down*/{
         Speed -= 0.5; 
         vehicleAttribute.speed -= 0.5;
-        // if (Speed <= -30){
-        //   Speed = -30;
-        //   vehicleAttribute.speed = -30;
-        // }
+        if (Speed <= -maxSpeed){
+          Speed = -maxSpeed;
+          vehicleAttribute.speed = -maxSpeed;
+        }
         break;
       }
       case 37: /*left*/{
@@ -208,7 +211,7 @@ loader.load('../static/scene.gltf',(obj) =>{
         vehicleAttribute.speed = 0; 
         vehicleAttribute.rotation = 0; 
         vehicleAttribute.cameraPositionX = 0;
-        vehicleAttribute.cameraPositionY = 220;
+        vehicleAttribute.cameraPositionY = 160;
         vehicleAttribute.cameraPositionZ = 50;
         vehicleAttribute.cameraRotationX = 0;
         vehicleAttribute.cameraRotationY = 0;
@@ -225,15 +228,15 @@ loader.load('../static/scene.gltf',(obj) =>{
       }
       case 70:/*F*/ {
         if (flag) {
-          camera.position.set(0,650,-1500);
+          camera.position.set(0, 210, -700);
           vehicleAttribute.cameraPositionX = 0;
-          vehicleAttribute.cameraPositionY = 650;
-          vehicleAttribute.cameraPositionZ = -1500;
+          vehicleAttribute.cameraPositionY = 210;
+          vehicleAttribute.cameraPositionZ = -700;
         }
         if (!flag) {
-          camera.position.set(0,220,50);
+          camera.position.set(0, 160, 50);
           vehicleAttribute.cameraPositionX = 0;
-          vehicleAttribute.cameraPositionY = 220;
+          vehicleAttribute.cameraPositionY = 160;
           vehicleAttribute.cameraPositionZ = 50;
         }
         flag = !flag;
@@ -302,11 +305,11 @@ loader.load('../static/scene.gltf',(obj) =>{
 
 var floor = new THREE.Mesh();
 var loader = new GLTFLoader();
-loader.load('../static/floor.gltf',(obj) =>{
+loader.load('../static/floor2.gltf',(obj) =>{
   var mesh = obj.scene;
   // var textloader = new TextureLoader();
   // textloader.load
-  mesh.position.set(0, 0, 50000);
+  mesh.position.set(0, 1900, 50000);
   mesh.rotation.set(0, Math.PI, 0);
   mesh.scale.set(1000, 1000, 1000);
   mesh.castShadow = true;
@@ -377,7 +380,7 @@ const camera = new THREE.PerspectiveCamera(
   0.001,
   200000
 )
-camera.position.set(0, 220, 0)
+camera.position.set(0, 105, 105);
 scene.add(camera)
 // group.add(camera)
 
@@ -431,33 +434,65 @@ const tick = () => {
   camera.position.x = vehicleAttribute.cameraPositionX;
   camera.position.y = vehicleAttribute.cameraPositionY;
   camera.position.z = vehicleAttribute.cameraPositionZ;
-  // group.rotation.x = vehicleAttribute.cameraRotationX;
-  // group.rotation.y = vehicleAttribute.cameraRotationY;
-  // group.rotation.z = vehicleAttribute.cameraRotationZ;
-  // camera.lookAt(-1000000 * Math.sin(PreRotation), 220, 1000000 * Math.cos(PreRotation));
-  camera.lookAt(1000000 * Math.sin(PreRotation), 220, 1000000 * Math.cos(PreRotation));
   if (Rotation != 0){
     PreRotation -= Rotation;
-    vehicleAttribute.rotation = PreRotation;
+    // vehicleAttribute.rotation = PreRotation;
     // PreRotation = vehicleAttribute.cameraRotationY;
     group.rotation.y = PreRotation;
     cubeMesh.rotation.y = PreRotation;
-    if (PreRotation < 2 * (-Math.PI)){
-      PreRotation += 2 * Math.PI;
-    }
-    if (PreRotation > 2 * Math.PI){
-      PreRotation -= 2 * Math.PI;
-    }
+    // if (PreRotation < 2 * (-Math.PI)){
+    //   PreRotation += 2 * Math.PI;
+    // }
+    // if (PreRotation > 2 * Math.PI){
+    //   PreRotation -= 2 * Math.PI;
+    // }
+    vehicleAttribute.rotation = PreRotation;
   }
   Rotation = 0;
   ForwardSpeed = Speed * Math.cos(PreRotation);
   RightSpeed = -Speed * Math.sin(PreRotation);
+  if (Speed != 0){
+    if (collisionCheck()){
+      console.log('碰撞');
+      // if (PreRotation > -Math.PI/2 && PreRotation < Math.PI/2){//车头朝前
+      //   PreRotation = 0;
+      //   vehicleAttribute.rotation = 0;
+      // }
+      // if (PreRotation > Math.PI/2 && PreRotation < Math.PI*3/2){//车头朝后
+      //   PreRotation = Math.PI;
+      //   vehicleAttribute.rotation = Math.PI;
+      // }
+      // group.rotation.y = PreRotation;
+      // cubeMesh.rotation.y = PreRotation;
+      Speed = 0;
+      vehicleAttribute.speed = 0;
+      alert("You crashed. \nYou will respawn.");
+      vehicleAttribute.speed = 0; 
+      vehicleAttribute.rotation = 0; 
+      vehicleAttribute.cameraPositionX = 0;
+      vehicleAttribute.cameraPositionY = 160;
+      vehicleAttribute.cameraPositionZ = 50;
+      vehicleAttribute.cameraRotationX = 0;
+      vehicleAttribute.cameraRotationY = 0;
+      vehicleAttribute.cameraRotationZ = 0;
+      Speed = 0; 
+      PreRotation = 0; 
+      Rotation = 0; 
+      group.position.set(0,0,0);
+      cubeMesh.position.set(0,0,0);
+      group.rotation.set(0,0,0); 
+      cubeMesh.rotation.set(0,0,0); 
+    }
+  }
+  camera.lookAt(10000000 * Math.sin(PreRotation), 220, 10000000 * Math.cos(PreRotation))
+  // camera.lookAt(new Vector3(group.position.x - 100 *RightSpeed, group.position.y + 20, group.position.z + 600 + ForwardSpeed));
   group.position.z += ForwardSpeed;
   cubeMesh.position.z += ForwardSpeed;
   group.position.x -= RightSpeed;
   cubeMesh.position.x -= RightSpeed;
-  // camera.position.x -= RightSpeed;
-  // camera.position.x += RightSpeed;
+  vehicleAttribute.positionX = group.position.x;
+  vehicleAttribute.positionY = group.position.y;
+  vehicleAttribute.positionZ = group.position.z;
 
 
 
@@ -465,7 +500,7 @@ const tick = () => {
   //camera.lookAt(group);
   renderer.render(scene, camera);
   renderer.shadowMap.enabled = true;
-  // collisionCheck();
+  
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
@@ -517,12 +552,15 @@ function collisionCheck(){
       }
     }
   }
+  return bool;
   //在浏览器控制显示当前两个模型对象是否碰撞(也就是相互交叉状态)
-  if (bool) {
-    console.log('碰撞');
-  } else {
-    console.log('未碰撞');
-  }
+  // if (bool) {
+  //   console.log('碰撞');
+  //   Speed /= 2;
+  //   vehicleAttribute.speed /= 2;
+  // } else {
+  //   console.log('未碰撞');
+  // }
 }
 
 
