@@ -23,14 +23,14 @@ var vehicleAttribute = new function(){
   this.positionY;
   this.positionZ;
 };
-gui.add(vehicleAttribute, "speed", -100, 100).listen();
-gui.add(vehicleAttribute, "rotation", -0.1, 0.1).listen();
-gui.add(vehicleAttribute, "cameraPositionX", -2000, 3000).listen();
-gui.add(vehicleAttribute, "cameraPositionY", -2000, 3000).listen();
-gui.add(vehicleAttribute, "cameraPositionZ", -2000, 3000).listen();
-gui.add(vehicleAttribute, "cameraRotationX", -2 * Math.PI, 2 * Math.PI).listen();
-gui.add(vehicleAttribute, "cameraRotationY", -2 * Math.PI, 2 * Math.PI).listen();
-gui.add(vehicleAttribute, "cameraRotationZ", -2 * Math.PI, 2 * Math.PI).listen();
+// gui.add(vehicleAttribute, "speed", -100, 100).listen();
+// gui.add(vehicleAttribute, "rotation", -0.1, 0.1).listen();
+// gui.add(vehicleAttribute, "cameraPositionX", -2000, 3000).listen();
+// gui.add(vehicleAttribute, "cameraPositionY", -2000, 3000).listen();
+// gui.add(vehicleAttribute, "cameraPositionZ", -2000, 3000).listen();
+// gui.add(vehicleAttribute, "cameraRotationX", -2 * Math.PI, 2 * Math.PI).listen();
+// gui.add(vehicleAttribute, "cameraRotationY", -2 * Math.PI, 2 * Math.PI).listen();
+// gui.add(vehicleAttribute, "cameraRotationZ", -2 * Math.PI, 2 * Math.PI).listen();
 
 
 /**
@@ -128,9 +128,9 @@ loader.load('../static/scene.gltf',(obj) =>{
   vehicleAttribute.positionX = group.position.x;
   vehicleAttribute.positionY = group.position.y;
   vehicleAttribute.positionZ = group.position.z;
-  gui.add(vehicleAttribute, "positionX").listen();
-  gui.add(vehicleAttribute, "positionY").listen();
-  gui.add(vehicleAttribute, "positionZ").listen();
+  // gui.add(vehicleAttribute, "positionX").listen();
+  // gui.add(vehicleAttribute, "positionY").listen();
+  // gui.add(vehicleAttribute, "positionZ").listen();
   scene.add(group);
 
 
@@ -279,7 +279,7 @@ loader.load('../static/scene.gltf',(obj) =>{
 
 var floor = new THREE.Mesh();
 var loader = new GLTFLoader();
-loader.load('../static/floor3.gltf',(obj) =>{
+loader.load('../static/floor.gltf',(obj) =>{
   var mesh = obj.scene;
   mesh.position.set(0, 1900, 50000);
   mesh.rotation.set(0, Math.PI, 0);
