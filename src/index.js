@@ -8,8 +8,7 @@ import { GLTFLoader }  from 'three/examples/jsm/loaders/GLTFLoader.js'
  * GUI Controls
  */
 import * as dat from 'dat.gui'
-import { MeshLambertMaterial, Vector3} from 'three'
-// import { DoubleSide, TextureLoader } from 'three'
+import { MeshLambertMaterial} from 'three'
 const gui = new dat.GUI()
 var vehicleAttribute = new function(){
   this.speed = 0;
@@ -370,8 +369,6 @@ controls.touches = {
   ONE: THREE.TOUCH.ROTATE,
   TWO: THREE.TOUCH.DOLLY_PAN,
 }
- 
-
 
 /**
  * Renderer
@@ -382,15 +379,15 @@ const renderer = new THREE.WebGLRenderer({
   logarithmicDepthBuffer : true
 })
 renderer.setClearColor(0x444444,1);//设置渲染器renderer的背景色
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
  * Animate
  */
-const clock = new THREE.Clock()
+const clock = new THREE.Clock();
 const tick = () => {
-  const elapsedTime = clock.getElapsedTime()
+  const elapsedTime = clock.getElapsedTime();
 
   // Update controls
   controls.update()
@@ -402,16 +399,14 @@ const tick = () => {
   camera.position.z = vehicleAttribute.cameraPositionZ;
   if (Rotation != 0){
     PreRotation -= Rotation;
-    // vehicleAttribute.rotation = PreRotation;
-    // PreRotation = vehicleAttribute.cameraRotationY;
     group.rotation.y = PreRotation;
     cubeMesh.rotation.y = PreRotation;
-    // if (PreRotation < 2 * (-Math.PI)){
-    //   PreRotation += 2 * Math.PI;
-    // }
-    // if (PreRotation > 2 * Math.PI){
-    //   PreRotation -= 2 * Math.PI;
-    // }
+    if (PreRotation < 2 * (-Math.PI)){
+      PreRotation += 2 * Math.PI;
+    }
+    if (PreRotation > 2 * Math.PI){
+      PreRotation -= 2 * Math.PI;
+    }
     vehicleAttribute.rotation = PreRotation;
   }
   Rotation = 0;
@@ -420,16 +415,6 @@ const tick = () => {
   if (Speed != 0){
     if (collisionCheck()){
       console.log('碰撞');
-      // if (PreRotation > -Math.PI/2 && PreRotation < Math.PI/2){//车头朝前
-      //   PreRotation = 0;
-      //   vehicleAttribute.rotation = 0;
-      // }
-      // if (PreRotation > Math.PI/2 && PreRotation < Math.PI*3/2){//车头朝后
-      //   PreRotation = Math.PI;
-      //   vehicleAttribute.rotation = Math.PI;
-      // }
-      // group.rotation.y = PreRotation;
-      // cubeMesh.rotation.y = PreRotation;
       alert("You crashed. \nYou will respawn.");
       Initpos();
     }
@@ -449,7 +434,6 @@ const tick = () => {
   }
 
   // Render
-  //camera.lookAt(group);
   renderer.render(scene, camera);
   renderer.shadowMap.enabled = true;
   
