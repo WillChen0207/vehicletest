@@ -8,7 +8,7 @@ import { GLTFLoader }  from 'three/examples/jsm/loaders/GLTFLoader.js'
  * GUI Controls
  */
 import * as dat from 'dat.gui'
-import { MeshLambertMaterial} from 'three'
+import { MeshDistanceMaterial, MeshLambertMaterial} from 'three'
 const gui = new dat.GUI()
 var vehicleAttribute = new function(){
   this.speed = 0;
@@ -424,7 +424,9 @@ const tick = () => {
   if (Speed != 0){
     if (collisionCheck(0)){
       console.log('碰撞');
-      alert("You crashed. \nYou will respawn.\nYour score:"+scoreSum);
+      PlaySound();
+      // setTimeout("alert('You crashed. \nYou will respawn.\nYour score:'+scoreSum);Initpos();",0);无法实现异步执行
+      alert('You crashed. \nYou will respawn.\nYour score:'+scoreSum);
       Initpos();
     }
     else if (collisionCheck(1)){
@@ -511,9 +513,43 @@ function score(){
   var num = Math.floor(Math.random()*4);
   scoreMesh.position.set(posx[num], 200, posz[num]);
   document.getElementById("Target").innerHTML = "Your new target: x:" + posx[num] + " z:" + posz[num];
+  auLoader.load('../static/Music/GetScore.mp3',function(AudioBuffer){
+    auMuisc.setBuffer(AudioBuffer);
+    auMuisc.autoplay = true;
+    auMuisc.setLoop(flase);//是否循环
+    auMuisc.setVolume(0.3);//音量
+    auMuisc.play();//播放、stop停止、pause停止
+  })//加载得分音频
 }
 
 function Posshow(){
   document.getElementById("Posshow").innerHTML = "Your position now: x:" + group.position.x.toFixed(1) + " z:" + group.position.z.toFixed(1);
   document.getElementById("ScoreSum").innerHTML = "Your score now: " + scoreSum +"!";
 }
+
+  var listener = new THREE.AudioListener();//创建一个监听者
+  camera.add(listener);//把监听添加到camera
+  var audio = new THREE.Audio(listener);//创建一个非位置音频对象 用于控制播放
+  var audioLoader = new THREE.AudioLoader();//创建一个音频加载器对象
+  audioLoader.load('../static/Music/Killer.mp3',function(AudioBuffer){
+    audio.setBuffer(AudioBuffer);
+    audio.autoplay = true;
+    audio.setLoop(true);//是否循环
+    audio.setVolume(0.5);//音量
+    audio.play();//播放、stop停止、pause停止
+  })//加载音频文件
+
+  var listener = new THREE.AudioListener();//创建一个监听者
+  camera.add(listener);//把监听添加到camera
+  var auMuisc = new THREE.Audio(listener);//创建一个非位置音频对象 用于控制播放
+  var auLoader = new THREE.AudioLoader();//创建一个音频加载器对象
+
+  function PlaySound(){
+    auLoader.load('../static/Music/Crash.mp3',function(AudioBuffer){
+      auMuisc.setBuffer(AudioBuffer);
+      auMuisc.autoplay = true;
+      auMuisc.setLoop(flase);//是否循环
+      auMuisc.setVolume(0.3);//音量
+      auMuisc.play();//播放、stop停止、pause停止
+    })//加载碰撞音频
+  }
