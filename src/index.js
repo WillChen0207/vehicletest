@@ -43,6 +43,7 @@ const canvas = document.querySelector('#webgl')
 const scene = new THREE.Scene()
 scene.fog = new THREE.Fog( 0xf2f7ff, 1, 100000 );
 var titlearray = ['_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','🚗'];
+var scoreSum = 0;
 var timer = window.setInterval(function(){
   titlechange();
 }, 1000);
@@ -117,8 +118,6 @@ var loader = new GLTFLoader();
 var ForwardSpeed = 0, RightSpeed = 0, Rotation = 0, PreRotation = 0,Speed = 0;
 loader.load('../static/scene.gltf',(obj) =>{
   var mesh = obj.scene;
-  // var textloader = new TextureLoader();
-  // textloader.load
   mesh.position.set(0, 0, 250);
   mesh.rotation.set(0,0,0);
   mesh.scale.set(3, 3, 3);
@@ -128,15 +127,13 @@ loader.load('../static/scene.gltf',(obj) =>{
   vehicleAttribute.positionX = group.position.x;
   vehicleAttribute.positionY = group.position.y;
   vehicleAttribute.positionZ = group.position.z;
-  // gui.add(vehicleAttribute, "positionX").listen();
-  // gui.add(vehicleAttribute, "positionY").listen();
-  // gui.add(vehicleAttribute, "positionZ").listen();
+  gui.add(vehicleAttribute, "positionX").listen();
+  gui.add(vehicleAttribute, "positionY").listen();
+  gui.add(vehicleAttribute, "positionZ").listen();
   scene.add(group);
-
-
     
   var flag = true;
-  var maxSpeed = 60;
+  var maxSpeed = 120;
     function onKeyDown(event)
   {
     switch(event.keyCode)
@@ -154,9 +151,9 @@ loader.load('../static/scene.gltf',(obj) =>{
       case 40: /*down*/{
         Speed -= 0.5; 
         vehicleAttribute.speed -= 0.5;
-        if (Speed <= -maxSpeed){
-          Speed = -maxSpeed;
-          vehicleAttribute.speed = -maxSpeed;
+        if (Speed <= -maxSpeed/2){
+          Speed = -maxSpeed/2;
+          vehicleAttribute.speed = -maxSpeed/2;
         }
         break;
       }
@@ -219,8 +216,6 @@ loader.load('../static/scene.gltf',(obj) =>{
         flag = !flag;
         break;
       }
-      
-
     }
   };
 
@@ -277,9 +272,28 @@ loader.load('../static/scene.gltf',(obj) =>{
   document.addEventListener('keyup', onKeyUp, false);
 });
 
-var floor = new THREE.Mesh();
-var loader = new GLTFLoader();
-loader.load('../static/floor.gltf',(obj) =>{
+  var scoreMesh = new THREE.Mesh();
+  var loader = new GLTFLoader();
+  loader.load('../static/coin/scene.gltf',(obj) =>{
+  var mesh = obj.scene;
+  mesh.position.set(0, 200, 250);
+  mesh.rotation.set(0,0,0);
+  mesh.scale.set(5, 5, 5);
+  scoreMesh = mesh;
+  scene.add(scoreMesh);
+  score();
+});
+  
+  var timer2 = window.setInterval(function(){
+    coinRotate();
+  }, 10);
+  function coinRotate(){
+    scoreMesh.rotation.y += 0.01;
+  }
+
+  var floor = new THREE.Mesh();
+  var loader = new GLTFLoader();
+  loader.load('../static/floor.gltf',(obj) =>{
   var mesh = obj.scene;
   mesh.position.set(0, 1900, 50000);
   mesh.rotation.set(0, Math.PI, 0);
@@ -301,11 +315,6 @@ scene.background = boxloader.load(urls);
 // 辅助坐标
 // var axesHelper = new THREE.AxesHelper( 150 );
 // scene.add( axesHelper );
-
-//辅助网格
-// var helper = new THREE.GridHelper( 100000, 10000 );
-// scene.add( helper );
-
 
 /**
  * Sizes
@@ -413,10 +422,14 @@ const tick = () => {
   ForwardSpeed = Speed * Math.cos(PreRotation);
   RightSpeed = -Speed * Math.sin(PreRotation);
   if (Speed != 0){
-    if (collisionCheck()){
+    if (collisionCheck(0)){
       console.log('碰撞');
-      alert("You crashed. \nYou will respawn.");
+      alert("You crashed. \nYou will respawn.\nYour score:"+scoreSum);
       Initpos();
+    }
+    else if (collisionCheck(1)){
+      score();
+      scoreSum ++;
     }
   }
   camera.lookAt(10000000 * Math.sin(PreRotation), 220, 10000000 * Math.cos(PreRotation))
@@ -428,6 +441,7 @@ const tick = () => {
   vehicleAttribute.positionY = group.position.y;
   vehicleAttribute.positionZ = group.position.z;
   SpeedShow();
+  Posshow();
   if (group.position.z <= -25000){
     alert("恭喜你找到彩蛋！\n制作人：陈诺言 戴梓莘\n有些时候，我们是需要回头看看走过的路。");
     Initpos();
@@ -443,41 +457,23 @@ const tick = () => {
 }
 tick();
 
-function collisionCheck(){
-  //声明一个变量用来表示是否碰撞
+function collisionCheck(Num){
   var bool = false;
-  // threejs的几何体默认情况下几何中心在场景中坐标是坐标原点。
-  // 可以通过position属性或.getWorldPosition()方法获得模型几何中心的世界坐标
   var centerCoord = cubeMesh.position.clone();
-  //网格模型几何体的所有顶点数据
   var vertices = cubeGeometry.vertices;
-  //1.循环遍历几何体所有顶点坐标
-  //2.把几何体的每一个顶点和几何体中心构建一个射线
   for (var i = 0; i < vertices.length; i++) {
-    // vertices[i]获得几何体索引是i的顶点坐标，
-    // 注意执行.clone()返回一个新的向量，以免改变几何体顶点坐标值
-    // 几何体的顶点坐标要执行该几何体绑定模型对象经过的旋转平移缩放变换
-    // 几何体顶点经过的变换可以通过模型的本地矩阵属性.matrix或世界矩阵属性.matrixWorld获得
     var vertexWorldCoord = vertices[i].clone().applyMatrix4(cubeMesh.matrixWorld);
-    var dir = new THREE.Vector3(); //创建一个向量
-    // 几何体顶点坐标和几何体中心坐标构成的方向向量
+    var dir = new THREE.Vector3(); 
     dir.subVectors(vertexWorldCoord, centerCoord);
-
-    //Raycaster构造函数创建一个射线投射器对象，参数1、参数2改变的是该对象的射线属性.ray
-    // 参数1：射线的起点
-    // 参数2：射线的方向，注意归一化的时候，需要先克隆,否则后面会执行dir.length()计算向量长度结果是1
     var raycaster = new THREE.Raycaster(centerCoord, dir.clone().normalize());
-
-    // 计算射线和参数1中的模型对象是否相交，参数1数组中可以设置多个模型模型对象，下面参数只设置了立方体网格模型
-    var intersects = raycaster.intersectObjects([floor], true);
-    if (intersects.length > 0) { // 判断参数[floor]中模型对象是否与射线相交
-      // intersects[0].distance：射线起点与交叉点之间的距离(交叉点：射线和模型表面交叉点坐标)
-      // dir.length()：球体顶点和几何体几何中心构成向量的长度
-      // 通过距离大小比较判断是否碰撞
-      // intersects[0].distance小于dir.length()，说明交叉点的位置在射线起点和几何体顶点之间，
-      //而交叉点又在立方体表面上,也就是说立方体部分表面插入到了几何体里面
+    if (Num == 0){
+      var intersects = raycaster.intersectObjects([floor], true);
+    }
+    else if (Num == 1){
+      var intersects = raycaster.intersectObjects([scoreMesh], true);
+    }
+    if (intersects.length > 0) { 
       if (intersects[0].distance < dir.length()) {
-        //循环遍历几何体顶点，每一个顶点都要创建一个射线，进行一次交叉拾取计算，只要有一个满足上面的距离条件，就发生了碰撞
         bool = true;
       }
     }
@@ -506,4 +502,18 @@ function Initpos(){
   cubeMesh.position.set(0,0,0);
   group.rotation.set(0,0,0); 
   cubeMesh.rotation.set(0,0,0); 
+  scoreSum = 0;
+}
+
+function score(){
+  var posz = [60000, 60000, 109000, 109500];
+  var posx = [0, -50000, -100000, 0];
+  var num = Math.floor(Math.random()*4);
+  scoreMesh.position.set(posx[num], 200, posz[num]);
+  document.getElementById("Target").innerHTML = "Your new target: x:" + posx[num] + " z:" + posz[num];
+}
+
+function Posshow(){
+  document.getElementById("Posshow").innerHTML = "Your position now: x:" + group.position.x.toFixed(1) + " z:" + group.position.z.toFixed(1);
+  document.getElementById("ScoreSum").innerHTML = "Your score now: " + scoreSum +"!";
 }
