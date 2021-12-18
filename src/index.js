@@ -127,9 +127,9 @@ loader.load('../static/scene.gltf',(obj) =>{
   vehicleAttribute.positionX = group.position.x;
   vehicleAttribute.positionY = group.position.y;
   vehicleAttribute.positionZ = group.position.z;
-  gui.add(vehicleAttribute, "positionX").listen();
-  gui.add(vehicleAttribute, "positionY").listen();
-  gui.add(vehicleAttribute, "positionZ").listen();
+  // gui.add(vehicleAttribute, "positionX").listen();
+  // gui.add(vehicleAttribute, "positionY").listen();
+  // gui.add(vehicleAttribute, "positionZ").listen();
   scene.add(group);
     
   var flag = true;
