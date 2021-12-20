@@ -25,7 +25,7 @@ var vehicleAttribute = new function(){
 };
 // gui.add(vehicleAttribute, "speed", -100, 100).listen();
 // gui.add(vehicleAttribute, "rotation", -0.1, 0.1).listen();
-// gui.add(vehicleAttribute, "cameraPositionX", -2000, 3000).listen();
+// gui.add(vehicleAttribute, "cameraPositionX", 0, 3000).listen();
 // gui.add(vehicleAttribute, "cameraPositionY", -2000, 3000).listen();
 // gui.add(vehicleAttribute, "cameraPositionZ", -2000, 3000).listen();
 // gui.add(vehicleAttribute, "cameraRotationX", -2 * Math.PI, 2 * Math.PI).listen();
@@ -75,15 +75,15 @@ var cubeGeometry = new THREE.Geometry();
         //  |/      |/
         //  v2------v3
 var vertices = [
-  new THREE.Vector3(-200, 350, -400),//0
-  new THREE.Vector3(200, 350, -400),//1
-  new THREE.Vector3(200, 0, -400),//2
-  new THREE.Vector3(-200, 0, -400),//3
-  new THREE.Vector3(-200, 0, 200),//4
-  new THREE.Vector3(-200, 350, 200),//5
-  new THREE.Vector3(200, 350, 200),//6
-  new THREE.Vector3(200, 0, 200)//7
-];//total:x, y, z = 400, 350, 600
+  new THREE.Vector3(-500, 500, -1600),//0
+  new THREE.Vector3(500, 500, -1600),//1
+  new THREE.Vector3(500, 0, -1600),//2
+  new THREE.Vector3(-500, 0, -1600),//3
+  new THREE.Vector3(-500, 0, 1200),//4
+  new THREE.Vector3(-500, 500, 1200),//5
+  new THREE.Vector3(500, 500, 1200),//6
+  new THREE.Vector3(500, 0, 1200)//7
+];
 cubeGeometry.vertices = vertices;
 var cubeFaces = [
   new THREE.Face3(0,1,2),
@@ -104,7 +104,7 @@ cubeGeometry.computeFaceNormals();//生成法向量
 var cubeMaterial = new MeshLambertMaterial({
   color : 0xeeeeee,
   transparent : true,
-  opacity : 0
+  opacity : 0.8
 });
 var cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
 cubeMesh.position.set(0, 0, 0);
@@ -425,7 +425,6 @@ const tick = () => {
     if (collisionCheck(0)){
       console.log('碰撞');
       PlaySound();
-      // setTimeout("alert('You crashed. \nYou will respawn.\nYour score:'+scoreSum);Initpos();",0);无法实现异步执行
       alert('You crashed. \nYou will respawn.\nYour score:'+scoreSum);
       Initpos();
     }
@@ -516,7 +515,7 @@ function score(){
   auLoader.load('../static/Music/GetScore.mp3',function(AudioBuffer){
     auMuisc.setBuffer(AudioBuffer);
     auMuisc.autoplay = true;
-    auMuisc.setLoop(flase);//是否循环
+    auMuisc.setLoop(false);//是否循环
     auMuisc.setVolume(0.3);//音量
     auMuisc.play();//播放、stop停止、pause停止
   })//加载得分音频
@@ -531,11 +530,11 @@ function Posshow(){
   camera.add(listener);//把监听添加到camera
   var audio = new THREE.Audio(listener);//创建一个非位置音频对象 用于控制播放
   var audioLoader = new THREE.AudioLoader();//创建一个音频加载器对象
-  audioLoader.load('../static/Music/Killer.mp3',function(AudioBuffer){
+  audioLoader.load('../static/Music/Radio.mp3',function(AudioBuffer){
     audio.setBuffer(AudioBuffer);
     audio.autoplay = true;
     audio.setLoop(true);//是否循环
-    audio.setVolume(0.5);//音量
+    audio.setVolume(0.4);//音量
     audio.play();//播放、stop停止、pause停止
   })//加载音频文件
 
@@ -548,7 +547,7 @@ function Posshow(){
     auLoader.load('../static/Music/Crash.mp3',function(AudioBuffer){
       auMuisc.setBuffer(AudioBuffer);
       auMuisc.autoplay = true;
-      auMuisc.setLoop(flase);//是否循环
+      auMuisc.setLoop(false);//是否循环
       auMuisc.setVolume(0.3);//音量
       auMuisc.play();//播放、stop停止、pause停止
     })//加载碰撞音频
