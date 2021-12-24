@@ -2,6 +2,7 @@ import './style/main.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader }  from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 // import * as CANNON from 'cannon'
 
 /**
@@ -275,14 +276,14 @@ loader.load('../static/scene.gltf',(obj) =>{
   var scoreMesh = new THREE.Mesh();
   var loader = new GLTFLoader();
   loader.load('../static/coin/scene.gltf',(obj) =>{
-  var mesh = obj.scene;
-  mesh.position.set(0, 200, 250);
-  mesh.rotation.set(0,0,0);
-  mesh.scale.set(5, 5, 5);
-  scoreMesh = mesh;
-  scene.add(scoreMesh);
-  score();
-});
+    var mesh = obj.scene;
+    mesh.position.set(0, 200, 250);
+    mesh.rotation.set(0,0,0);
+    mesh.scale.set(5, 5, 5);
+    scoreMesh = mesh;
+    scene.add(scoreMesh);
+    score();
+  });
   
   var timer2 = window.setInterval(function(){
     coinRotate();
@@ -294,14 +295,35 @@ loader.load('../static/scene.gltf',(obj) =>{
   var floor = new THREE.Mesh();
   var loader = new GLTFLoader();
   loader.load('../static/floor.gltf',(obj) =>{
-  var mesh = obj.scene;
-  mesh.position.set(0, 1900, 50000);
-  mesh.rotation.set(0, Math.PI, 0);
-  mesh.scale.set(1000, 1000, 1000);
-  mesh.castShadow = true;
-  floor = mesh;
-  scene.add(mesh);
-});
+    var mesh = obj.scene;
+    mesh.position.set(0, 1900, 50000);
+    mesh.rotation.set(0, Math.PI, 0);
+    mesh.scale.set(1000, 1000, 1000);
+    mesh.castShadow = true;
+    floor = mesh;
+    scene.add(mesh);
+  });
+
+  var mixer = new THREE.AnimationMixer();
+  var fbxloader = new FBXLoader();
+  var Passerby = new THREE.Group();
+  fbxloader.load('../static/Passerby.fbx',(obj) =>{
+    Passerby = obj;
+    mixer = new THREE.AnimationMixer(Passerby);
+    var action = mixer.clipAction(Passerby.animations[0]);
+    action.loop = THREE.LoopRepeat;
+    action.timeScale = 2;
+    action.play();
+    Passerby.traverse( function ( child ) {
+      if ( child.isMesh ) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    } );
+    Passerby.position.set(0, 50, 60000);
+    Passerby.scale.set(7, 7, 7);
+    scene.add(Passerby);
+  });
 
 //盒子模型
 let urls = [
@@ -422,8 +444,11 @@ const tick = () => {
   ForwardSpeed = Speed * Math.cos(PreRotation);
   RightSpeed = -Speed * Math.sin(PreRotation);
   if (Speed != 0){
+    if ((Math.abs(group.position.z - Passerby.position.z) <= 40) && (Math.abs(group.position.x - Passerby.position.x) <= 400 )){
+      alert('You hit an innocent guy. \nYou broke the traffic laws.\nYour score:' + scoreSum);
+      Initpos();
+    }
     if (collisionCheck(0)){
-      console.log('碰撞');
       PlaySound();
       alert('You crashed. \nYou will respawn.\nYour score:'+scoreSum);
       Initpos();
@@ -447,7 +472,12 @@ const tick = () => {
     alert("恭喜你找到彩蛋！\n制作人：陈诺言 戴梓莘\n有些时候，我们是需要回头看看走过的路。");
     Initpos();
   }
-
+  if (mixer !== null){
+    mixer.update(clock.getDelta()); 
+    Passerby.position.z += 2;
+    
+  }
+ 
   // Render
   renderer.render(scene, camera);
   renderer.shadowMap.enabled = true;
@@ -504,6 +534,7 @@ function Initpos(){
   group.rotation.set(0,0,0); 
   cubeMesh.rotation.set(0,0,0); 
   scoreSum = 0;
+  Passerby.position.z = 60000;
 }
 
 function score(){
