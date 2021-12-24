@@ -9,7 +9,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
  * GUI Controls
  */
 import * as dat from 'dat.gui'
-import { MeshDistanceMaterial, MeshLambertMaterial} from 'three'
+import { MeshLambertMaterial } from 'three'
 const gui = new dat.GUI()
 var vehicleAttribute = new function(){
   this.speed = 0;
@@ -307,6 +307,7 @@ loader.load('../static/scene.gltf',(obj) =>{
   var mixer = new THREE.AnimationMixer();
   var fbxloader = new FBXLoader();
   var Passerby = new THREE.Group();
+  var Passerby = new THREE.Group();
   fbxloader.load('../static/Passerby.fbx',(obj) =>{
     Passerby = obj;
     mixer = new THREE.AnimationMixer(Passerby);
@@ -321,7 +322,7 @@ loader.load('../static/scene.gltf',(obj) =>{
       }
     } );
     Passerby.position.set(0, 50, 60000);
-    Passerby.scale.set(7, 7, 7);
+    Passerby.scale.set(3, 3, 3);
     scene.add(Passerby);
   });
 
@@ -444,7 +445,7 @@ const tick = () => {
   ForwardSpeed = Speed * Math.cos(PreRotation);
   RightSpeed = -Speed * Math.sin(PreRotation);
   if (Speed != 0){
-    if ((Math.abs(group.position.z - Passerby.position.z) <= 40) && (Math.abs(group.position.x - Passerby.position.x) <= 400 )){
+    if ((Math.abs(group.position.z - Passerby.position.z) <= 200) && (Math.abs(group.position.x - Passerby.position.x) <= 200 )){
       alert('You hit an innocent guy. \nYou broke the traffic laws.\nYour score:' + scoreSum);
       Initpos();
     }
@@ -544,11 +545,11 @@ function score(){
   scoreMesh.position.set(posx[num], 200, posz[num]);
   document.getElementById("Target").innerHTML = "Your new target: x:" + posx[num] + " z:" + posz[num];
   auLoader.load('../static/Music/GetScore.mp3',function(AudioBuffer){
-    auMuisc.setBuffer(AudioBuffer);
-    auMuisc.autoplay = true;
-    auMuisc.setLoop(false);//是否循环
-    auMuisc.setVolume(0.3);//音量
-    auMuisc.play();//播放、stop停止、pause停止
+    auMusic.setBuffer(AudioBuffer);
+    auMusic.autoplay = true;
+    auMusic.setLoop(false);//是否循环
+    auMusic.setVolume(0.3);//音量
+    auMusic.play();//播放、stop停止、pause停止
   })//加载得分音频
 }
 
@@ -571,15 +572,15 @@ function Posshow(){
 
   var listener = new THREE.AudioListener();//创建一个监听者
   camera.add(listener);//把监听添加到camera
-  var auMuisc = new THREE.Audio(listener);//创建一个非位置音频对象 用于控制播放
+  var auMusic = new THREE.Audio(listener);//创建一个非位置音频对象 用于控制播放
   var auLoader = new THREE.AudioLoader();//创建一个音频加载器对象
 
   function PlaySound(){
     auLoader.load('../static/Music/Crash.mp3',function(AudioBuffer){
-      auMuisc.setBuffer(AudioBuffer);
-      auMuisc.autoplay = true;
-      auMuisc.setLoop(false);//是否循环
-      auMuisc.setVolume(0.3);//音量
-      auMuisc.play();//播放、stop停止、pause停止
+      auMusic.setBuffer(AudioBuffer);
+      auMusic.autoplay = true;
+      auMusic.setLoop(false);//是否循环
+      auMusic.setVolume(0.3);//音量
+      auMusic.play();//播放、stop停止、pause停止
     })//加载碰撞音频
   }
