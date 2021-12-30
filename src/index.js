@@ -307,7 +307,6 @@ loader.load('../static/scene.gltf',(obj) =>{
   var mixer = new THREE.AnimationMixer();
   var fbxloader = new FBXLoader();
   var Passerby = new THREE.Group();
-  var Passerby = new THREE.Group();
   fbxloader.load('../static/Passerby.fbx',(obj) =>{
     Passerby = obj;
     mixer = new THREE.AnimationMixer(Passerby);
@@ -324,6 +323,27 @@ loader.load('../static/scene.gltf',(obj) =>{
     Passerby.position.set(0, 50, 60000);
     Passerby.scale.set(3, 3, 3);
     scene.add(Passerby);
+  });
+
+  var mixer2 = new THREE.AnimationMixer();
+  var fbxloader2 = new FBXLoader();
+  var Runner = new THREE.Group();
+  fbxloader2.load('../static/Runner.fbx',(obj) =>{
+    Runner = obj;
+    mixer2 = new THREE.AnimationMixer(Runner);
+    var action = mixer2.clipAction(Runner.animations[0]);
+    action.loop = THREE.LoopRepeat;
+    action.timeScale = 100;
+    action.play();
+    Runner.traverse( function ( child ) {
+      if ( child.isMesh ) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    } );
+    Runner.position.set(-50000, 50, 60000);
+    Runner.scale.set(3, 3, 3);
+    scene.add(Runner);
   });
 
 //盒子模型
@@ -418,6 +438,8 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
  * Animate
  */
 const clock = new THREE.Clock();
+var PasserbyDir = true;
+var RunnerDir = true;
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
@@ -445,7 +467,7 @@ const tick = () => {
   ForwardSpeed = Speed * Math.cos(PreRotation);
   RightSpeed = -Speed * Math.sin(PreRotation);
   if (Speed != 0){
-    if ((Math.abs(group.position.z - Passerby.position.z) <= 200) && (Math.abs(group.position.x - Passerby.position.x) <= 200 )){
+    if ((Math.abs(group.position.z - Passerby.position.z) <= 200) && (Math.abs(group.position.x - Passerby.position.x) <= 200 ) || (Math.abs(group.position.z - Runner.position.z) <= 200) && (Math.abs(group.position.x - Runner.position.x) <= 200 )){
       alert('You hit an innocent guy. \nYou broke the traffic laws.\nYour score:' + scoreSum);
       Initpos();
     }
@@ -475,8 +497,38 @@ const tick = () => {
   }
   if (mixer !== null){
     mixer.update(clock.getDelta()); 
-    Passerby.position.z += 2;
-    
+    if (Passerby.position.z >= 111111){
+      PasserbyDir = false;
+      Passerby.rotation.y = Math.PI;
+    }
+    else if (Passerby.position.z <= 60000){
+      PasserbyDir = true;
+      Passerby.rotation.y = 0;
+    }
+    if (PasserbyDir){
+      Passerby.position.z += 2;
+    }
+    else{
+      Passerby.position.z -= 2;
+    }
+  }
+
+  if (mixer2 !== null){
+    mixer2.update(clock.getDelta()); 
+    if (Runner.position.x >= 0){
+      RunnerDir = false;
+      Runner.rotation.y = -Math.PI/2;
+    }
+    else if (Runner.position.x <= -50000){
+      RunnerDir = true;
+      Runner.rotation.y = Math.PI/2;
+    }
+    if (RunnerDir){
+      Runner.position.x += 5;
+    }
+    else{
+      Runner.position.x -= 5;
+    }
   }
  
   // Render
@@ -536,6 +588,7 @@ function Initpos(){
   cubeMesh.rotation.set(0,0,0); 
   scoreSum = 0;
   Passerby.position.z = 60000;
+  Runner.position.x = -50000;
 }
 
 function score(){
